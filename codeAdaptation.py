@@ -3,17 +3,9 @@
 """
 Created on Tue Sep  6 13:15:00 2022
 
-@author: pierre.le.merre
+@author: konstantinos kalaitzidis
 """
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Mar  2 00:45:18 2022
-
-@author: konstantinoskalaitzidis
-"""
-# %% Importing libraries
+#%% Importing Packages and Libraries
 
 #numeric analysis
 import pandas as pd
@@ -25,7 +17,7 @@ import math
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# %% Functions
+#%% Functions
 
 #function to calculate distance between the coordinates
 def calculateDistance(x1, x2, y1, y2):
@@ -83,7 +75,7 @@ def linear_search(values, search_for):
           
         
 
-# %% Pre-processing
+#%% Pre-processing
 
 #preparing behavioral data file
 beh_data = pd.read_csv("/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIlab/data files/Behavioral Region of Interest/tmaze_2021-10-16T17_05_25.csv")
@@ -171,7 +163,7 @@ step = total_time / len(dlc_data)
 dlc_data.iloc[:, 24] = range(len(dlc_data))*step
 
 
-# %% Understanding our datasets
+#%% Understanding our datasets
 
 
 #What are some information about our datasets? 
@@ -181,9 +173,9 @@ dlc_data.iloc[:, 24] = range(len(dlc_data))*step
 # Checking for missing data
 #missingInfo()
 
-# %% Store processed data
+#%% Store processed data
 
-# %% Calculations
+#%% Calculations
 
 
 '''Calculate the average speed, the standard deviation, and the standard error of the mean 
@@ -230,7 +222,7 @@ max_speed = np.max(sorted_speed_list) #48297.263931042384
 min_speed = np.min(sorted_speed_list) #0.20031764027047433
 
 
-# %% Gaussian filtering
+#%% Gaussian filtering
 
 '''Perform guassian filtering in the speed list'''
 
@@ -249,7 +241,7 @@ ax.scatter(dlc_data.iloc[:, 18],dlc_data.iloc[:, 19],c=z,s=1)
 plt.show()
 
 
-# %% Creating quartiles
+#%% Creating quartiles
 
 '''Split the dlc_data array into 4 equal parts (quartiles)'''
 
@@ -259,7 +251,7 @@ set_quartiles = 4
 quartiles = np.array(dlc_data)
 quartiles = np.array_split(quartiles, set_quartiles)
 
-# %%  Plotting
+#%%  Plotting
 
 
 '''Create a plot with N number of subplots showing the different quartiles of
@@ -295,7 +287,7 @@ plt.tight_layout()
 
 
 
-# %% Find the timestamps of ca detection
+#%% Find the timestamps of ca detection
 
 
 calcium_detection_times = beh_data.drop_duplicates(subset=['0.3'])
@@ -315,14 +307,14 @@ calcium_detection_times.drop_duplicates(subset=None, keep='first', inplace=True,
 
 
 
-# %% append ca times to dlc_data df
+#%% append ca times to dlc_data df
 
 
 dlc_data.iloc[:, 24] = dlc_data.iloc[:, 24] - detect_time
 
 
 
-# %% Phase detection 
+#%% Phase detection 
 
 # prep the df
 # change the names
@@ -337,7 +329,7 @@ calcium[8][calcium['Reward']==True]='Reward'
 calcium[8][(calcium['Initiation']==False) & (calcium['Reward']==False) ]='Task'
 
 
-# %% Modifying the ca file
+#%% Modifying the ca file
 
 
 
@@ -391,7 +383,7 @@ calcium[8][(calcium['Initiation']==False) & (calcium['Reward']==False) ]='Task'
 
 
 
-# %% Reading .nwb file
+#%% Reading .nwb file
 
 # =============================================================================
 # import numpy as np
@@ -428,7 +420,7 @@ calcium[8][(calcium['Initiation']==False) & (calcium['Reward']==False) ]='Task'
 # 
 # =============================================================================
 
-# %% Notes
+#%% Notes
 
 # =============================================================================
 
