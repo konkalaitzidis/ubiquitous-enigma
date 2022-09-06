@@ -5,6 +5,7 @@ Created on Tue Sep  6 14:46:05 2022
 
 @author: pierre.le.merre
 """
+import math
 
 #function to calculate distance between the coordinates
 def calculate_distance(x1, x2, y1, y2):

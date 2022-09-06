@@ -3,8 +3,9 @@
 """
 Created on Tue Sep  6 14:51:26 2022
 
-@author: pierre.le.merre
+@author: konstantinos kalaitzidis
 """
+from codeAdaptation import beh_data
 
 #see where we have the firt ca occurnace and print it's timestamp
 def linear_search(values, search_for):

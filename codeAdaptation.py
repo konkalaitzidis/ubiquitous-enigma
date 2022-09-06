@@ -13,23 +13,23 @@ import numpy as np
 from datetime import datetime
 import math
 
-# Data Visualization
+# Data Visualizationß
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 #%% Functions
 
 #function to calculate distance between the coordinates
-def calculateDistance(x1, x2, y1, y2):
+def calculate_distance(x1, x2, y1, y2):
     distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     return distance
 
  
 
 #print information for the data files
-def datasetInfo():
+def dataset_info():
     
-        def dataNames(int):
+        def data_names(int):
             names = ["Behavioral", "Tracking", "h5"]
             return print(names[i], "INFORMATION:")
                 
@@ -37,12 +37,12 @@ def datasetInfo():
         datafile_names = {'behavioral data' : beh_data, 'tracking data': dlc_data, 'h5':f}
         i = 0
         for key in datafile_names:
-            dataNames(i)
+            data_names(i)
             print(datafile_names[key].info(), "\n")
             i = i + 1
     
 #determine if your dataset has missing values 
-def missingInfo():
+def missing_info():
     print("Behavioral:\n",beh_data.isnull().sum(), "\n")
     print("Tracking:\n",dlc_data.isnull().sum(), "\n")
     print("Calcium:\n",f.isnull().sum(), "\n")
@@ -75,7 +75,7 @@ def linear_search(values, search_for):
           
         
 
-#%% Pre-processing
+#%% Data Preparation
 
 #preparing behavioral data file
 beh_data = pd.read_csv("/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIlab/data files/Behavioral Region of Interest/tmaze_2021-10-16T17_05_25.csv")
@@ -167,11 +167,11 @@ dlc_data.iloc[:, 24] = range(len(dlc_data))*step
 
 
 #What are some information about our datasets? 
-#datasetInfo()
+#dataset_info()
 
     
 # Checking for missing data
-#missingInfo()
+#missing_info()
 
 #%% Store processed data
 
@@ -197,7 +197,7 @@ for index, row in dlc_data.iterrows():
     y1 = dlc_data.iat[index, 19]
     y2 = dlc_data.iat[index + 1, 19]
     
-    distance = calculateDistance(x1, x2, y1, y2)
+    distance = calculate_distance(x1, x2, y1, y2)
     speed = distance / (dlc_data.iat[index+1, 24]-dlc_data.iat[index, 24])
     
     speed_list += [speed]
