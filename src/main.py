@@ -18,7 +18,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Import Function
-import calculate_distance, linear_search
+import calculate_distance
+from linear_search import l_search
 
 #%% Data Preparation
 
@@ -29,6 +30,8 @@ beh_data = pd.read_csv("/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIla
 beh_data = beh_data.rename(columns={'2021-10-16T17:05:26.6032384+02:00':'Time', '0':'Choice', '0.1':'Init-Reward', 'False':'Initiation', 'False.1':'Incorrect', 'False.2':'Reward'})
 #calcium_detection_times = calcium_detection_times.rename(columns={'Incorrect_ROI': 'Initiation_ROI'})
 
+#save csv file to a pickle file for better optimization
+#beh_data.to_pickle('/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIlab/data files/Behavioral Region of Interest/tmaze_2021-10-16T17_05_25.pkl')
 
 
 #Preparing deep lab cut file
@@ -43,7 +46,7 @@ dlc_data = dlc_data.rename(columns={24: 'Time'})
 #reading the arrowmaze_data2.h5 file^
 #write code to call the functions from the readSessions.py file. 
 import pandas as pd
-from utils import readSessions
+#from utils import readSessions
 
 
 # =============================================================================
@@ -63,7 +66,7 @@ pathname = "/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_projec
 #reading the h5 file that contains the deeplabcut and calcium imaging
 with pd.HDFStore(pathname) as hdf:
     # This prints a list of all group names:
-    print(hdf.keys())
+    print("Reading the h5 file that contains the deeplabcut and calcium imaging data...")
 
 f = pd.read_hdf(pathname, key="/meta")
 
@@ -237,9 +240,8 @@ plt.tight_layout()
 
 calcium_detection_times = beh_data.drop_duplicates(subset=['0.3'])
 
-
-# see where we have the firt ca occurnace and print it's timestamp
-detect_time = linear_search.search(beh_data.iloc[:, 7], 1)
+# see where we have the first ca occurnace and print it's timestamp
+detect_time = l_search(beh_data.iloc[:, 7], 1)
 
 # =============================================================================
 # datafile_name = dlc_data

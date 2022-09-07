@@ -5,10 +5,12 @@ Created on Tue Sep  6 14:51:26 2022
 
 @author: konstantinos kalaitzidis
 """
+
 from main import beh_data
 
+
 #see where we have the firt ca occurnace and print it's timestamp
-def search(values, search_for):
+def l_search(values, search_for):
     
     search_at = 0
     search_res = False
