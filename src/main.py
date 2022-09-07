@@ -19,8 +19,6 @@ import seaborn as sns
 
 # Import Function
 import calculate_distance
-from linear_search import l_search
-
 #%% Data Preparation
 
 #preparing behavioral data file
@@ -237,6 +235,24 @@ plt.tight_layout()
 
 #%% Find the timestamps of ca detection
 
+#see where we have the firt ca occurnace and print it's timestamp
+def l_search(values, search_for):
+    
+    search_at = 0
+    search_res = False
+    count = 0
+    detect_time = 0
+    
+    #Match the value with each data element	
+    while search_at < len(values) and search_res is False:
+      if values[search_at] == search_for:
+          search_res = True
+          detect_time = beh_data.iloc[count-1, 0]
+          print("Index Row is:", count, "and the time of ca detection is:", detect_time)
+          return detect_time
+      else:
+          search_at = search_at + 1
+          count = count+1
 
 calcium_detection_times = beh_data.drop_duplicates(subset=['0.3'])
 
