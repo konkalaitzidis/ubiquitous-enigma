@@ -25,11 +25,10 @@ import seaborn as sns
 # Functions
 import calculate_distance
 from dataset_info import info
-from missing_info import missing_info_data
 
 
 # %% Data Preparation
-
+print("\n\n\n=====> Data Preparation... <===== \n\n\n")
 
 # Preparing behavioral data file
 beh_data = pd.read_csv(
@@ -82,6 +81,8 @@ print("Added TIME values to the dlc file with step", step)
 
 
 # %% Understanding our datasets
+print("\n\n\n=====> Understanding our datasets <===== \n\n\n")
+
 
 datafile_names = {'behavioral data': beh_data,
                   'tracking data': dlc_data, 'h5': h5_file}
@@ -91,11 +92,14 @@ info(datafile_names)
 # %% Store processed data
 
 # %% Processing
+print("\n\n\n=====> Processing... <===== \n\n\n")
 
 '''Calculate the average speed, the standard deviation, and the standard error of the mean
 of the mouse on the behavioral file according to the coordinates on the dlc file'''
 
-speed_list = []  # list where speed values will be stored
+
+# List where speed values will be stored
+speed_list = []
 
 
 # Find all the speeds of the mouse
@@ -113,15 +117,16 @@ for index, row in dlc_data.iterrows():
 
     distance = calculate_distance.dist_calc(x1, x2, y1, y2)
     speed = distance / (dlc_data.iat[index+1, 24]-dlc_data.iat[index, 24])
-
     speed_list += [speed]
 
 
 # average speed
 print("The mouse's average speed is: ", np.mean(speed_list))
 
+
 # standard deviation
 print("The standard deviation is: ", np.std(speed_list))
+
 
 # standard error of the mean
 print("The standard error of the mean is: ", np.std(
@@ -133,40 +138,39 @@ sorted_speed_list = np.sort(speed_list)
 
 
 # find the max speed first.
-max_speed = np.max(sorted_speed_list)  # 48297.263931042384
-min_speed = np.min(sorted_speed_list)  # 0.20031764027047433
+max_speed = np.max(sorted_speed_list)
+min_speed = np.min(sorted_speed_list)
+
+print("Also found MAX SPEED and MINIMUM SPEED")
 
 
 # %% Gaussian filtering
+print("\n\n\n=====> Performed guassian filtering in the speed list. <===== \n\n\n")
 
-'''Perform guassian filtering in the speed list'''
-
+# Perform guassian filtering in the speed list
 speed_list = np.array(speed_list)
 
-# stacking the X and Y coordinates columns vertically
+# Stacking the X and Y coordinates columns vertically
 xy = np.vstack([dlc_data.iloc[:, 18], range(len(dlc_data.iloc[:, 19]))])
 
-# applying gaussian filtering
+# Applying gaussian filtering
 z = gaussian_kde(xy)(xy)
 fig1, ax = plt.subplots(1, 1)
 
-# plot
+# Plot
 ax.scatter(dlc_data.iloc[:, 18], dlc_data.iloc[:, 19], c=z, s=1)
 plt.show()
 
 
 # %% Creating quartiles
 
-'''Split the dlc_data array into 4 equal parts (quartiles)'''
-
-# specify how many parts
+# Split the dlc_data array into 4 equal parts (quartiles)
+# Specify how many parts
 set_quartiles = 4
-
 quartiles = np.array(dlc_data)
 quartiles = np.array_split(quartiles, set_quartiles)
 
-# %%  Plotting
-
+# %% Plotting
 
 '''Create a plot with N number of subplots showing the different quartiles of
 of the dlc_data and apply guassia smoothing to each subplot'''
@@ -176,14 +180,9 @@ plotRows = 2
 plotColumns = 2
 
 # Creating 4 (or N) subplots and unpacking the output array immediately
-
-
 # Perform guassian filtering in the data
 
-
 fig2, axs = plt.subplots(plotRows, plotColumns)
-
-
 axes_list = [axs[0, 0], axs[0, 1], axs[1, 0], axs[1, 1]]
 
 
@@ -196,12 +195,15 @@ for ax, i in zip(axes_list, range(set_quartiles)):
     # plotting for each quartile
     ax.scatter(quartiles[i][:, 18], quartiles[i][:, 19], c=z, s=1)
 
+print("\n\n\n=====> Plotting <===== \n\n\n")
 plt.tight_layout()
 
 
 # %% Find the timestamps of ca detection
+print("\n\n\n=====> Finding the timestamps of ca detection <===== \n\n\n")
 
-# see where we have the firt ca occurnace and print it's timestamp
+
+# See where we have the first ca occurnace and print it's timestamp
 def l_search(values, search_for):
 
     search_at = 0
@@ -224,15 +226,10 @@ def l_search(values, search_for):
 
 calcium_detection_times = beh_data.drop_duplicates(subset=['0.3'])
 
-# see where we have the first ca occurnace and print it's timestamp
+# See where we have the first ca occurnace and print it's timestamp
 detect_time = l_search(beh_data.iloc[:, 7], 1)
 
-# =============================================================================
-# datafile_name = dlc_data
-# detect_time = linear_search(datafile_name.iloc[:, 24], 1)
-# =============================================================================
-
-# subtracting the first time of ca detection from all the previous times
+# Subtracting the first time of ca detection from all the previous times
 calcium_detection_times.iloc[:,
                              0] = calcium_detection_times.iloc[:, 0] - detect_time
 calcium_detection_times.drop_duplicates(
@@ -246,6 +243,7 @@ dlc_data.iloc[:, 24] = dlc_data.iloc[:, 24] - detect_time
 
 
 # %% Phase detection
+print("\n\n\n=====> Done with Phase detection. Check CALCIUM df. <===== \n\n\n")
 
 # prep the df
 # change the names
@@ -259,185 +257,3 @@ calcium[8][calcium['Incorrect'] == True] = 'Incorrect'
 calcium[8][calcium['Reward'] == True] = 'Reward'
 calcium[8][(calcium['Initiation'] == False) &
            (calcium['Reward'] == False)] = 'Task'
-
-
-# %% Modifying the ca file
-
-
-# Print the shape of the calcium imaging and deeplabcut tracking for all sessions
-# =============================================================================
-# for session in readSessions.findSessions("data/arrowmaze_data.h5"):
-#     S = session.readDeconvolvedTraces()
-#     tracking = session.readTracking()
-#     print(S.shape, tracking.shape if tracking is not None else None)
-# =============================================================================
-# =============================================================================
-#
-# #Loop through only sessions of animal 2 and print the timestamp of the deeplabcut video
-# for session in readSessions.findSessions("data/arrowmaze_data.h5", animal_no=2):
-#     print(session.meta.video_time)
-#
-#
-#
-# def readCalciumTraces(self):
-#         '''Read all calcium traces from this session.
-#         Returns:
-#         A Pandas dataframe with the calcium traces as columns
-#         '''
-#         path = "/ca_recordings/{}/C".format(self.meta.ca_recording)
-#         return pd.read_hdf(self.hdfFile, path).unstack(level=0).C
-#
-#
-#
-# def findSessions(hdfFile, filterQuery=None, sortBy=None, closeStore=True, **filters):
-#     store = pd.HDFStore(hdfFile, 'r')
-#     queries = []
-#     for col, val in filters.items():
-#         if isinstance(val, str):
-#             queries.append("{} == '{}'".format(col, val))
-#         elif isinstance(val, list) or isinstance(val, tuple):
-#             queries.append("{} in {}".format(col, val))
-#         elif isinstance(val, int):
-#             queries.append("{} == {}".format(col, val))
-#         else:
-#             raise ValueError("Unknown filter type")
-#     meta = pd.read_hdf(store, "/meta")
-#     if filterQuery is not None: meta = meta.query(filterQuery)
-#     if queries: meta = meta.query(" & ".join(queries))
-#     if sortBy is not None: meta = meta.sort_values(sortBy)
-#     for sessionMeta in meta.itertuples():
-#         yield Session(store, sessionMeta)
-#     if closeStore: store.close()
-#
-# =============================================================================
-
-
-# %% Reading .nwb file
-
-# =============================================================================
-# import numpy as np
-# from pynwb import NWBHDF5IO
-#
-# io = NWBHDF5IO('/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/lab-content/20211016_163921_animal1learnday1.nwb', 'r')
-# nwbfile_in = io.read()
-#
-#
-#
-#
-#
-# from pynwb import NWBFile, NWBHDF5IO, TimeSeries
-# import datetime
-# import numpy as np
-#
-# # first, write a test NWB file
-# nwbfile = NWBFile(
-#     session_description='demonstrate adding to an NWB file',
-#     identifier='NWB123',
-#     session_start_time=datetime.datetime.now(datetime.timezone.utc),
-# )
-#
-# filename = '/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/lab-content/20211016_163921_animal1learnday1.nwb'
-# # =============================================================================
-# # with NWBHDF5IO(filename, 'w') as io:
-# #     io.write(nwbfile)
-# # =============================================================================
-#
-# # open the NWB file in r+ mode
-# with NWBHDF5IO(filename, 'r+') as io:
-#     read_nwbfile = io.read()
-#
-#
-# =============================================================================
-
-# %% Notes
-
-# =============================================================================
-
-
-'''Optimized way to plot'''
-# =============================================================================
-# for ax,i in zip(axes_list,range(set_quartiles)):
-#     ax.scatter(quartiles[i][:, 18], quartiles[i][:, 19] )
-# plt.tight_layout()
-# =============================================================================
-
-
-'''My solution to plot the subplot'''
-
-# =============================================================================
-# j=0
-# for i in range(set_quartiles):
-#     if i >= plotRows:
-#         if j == 0:
-#             axs[j,j+1].scatter(quartiles[i][:, 18], quartiles[i][:, 19]) #c=z,s=1)
-#             xy=np.vstack([quartiles[i][:, 18], range(len(quartiles[i][:, 19]))])
-#             z=gaussian_kde(xy)(xy)
-#             j = j + 1
-#         elif j == 1:
-#             axs[j,j].scatter(quartiles[i][:, 18], quartiles[i][:, 19]) #c=z,s=1)
-#             xy=np.vstack([quartiles[i][:, 18], range(len(quartiles[i][:, 19]))])
-#             z=gaussian_kde(xy)(xy)
-#     if i < plotRows:
-#         axs[i,0].scatter(quartiles[i][:, 18], quartiles[i][:, 19]) #c=z,s=1)
-#         xy=np.vstack([quartiles[i][:, 18], range(len(quartiles[i][:, 19]))])
-#         z=gaussian_kde(xy)(xy)
-#
-#
-# plt.tight_layout()
-# =============================================================================
-
-
-'''My solution to plot the subplot'''
-
-# =============================================================================
-# fig2, axs=plt.subplots(plotRows, plotColumns)
-#
-# j=0
-# for i in range(set_quartiles):
-#     if i >= plotRows:
-#         if j == 0:
-#             axs[j,j+1].scatter(quartiles[i][:, 18], quartiles[i][:, 19]) #c=z,s=1)
-#             j = j + 1
-#         elif j == 1:
-#             axs[j,j].scatter(quartiles[i][:, 18], quartiles[i][:, 19]) #c=z,s=1)
-#
-#     if i < plotRows:
-#         axs[i,0].scatter(quartiles[i][:, 18], quartiles[i][:, 19]) #c=z,s=1)
-#
-#
-#
-# plt.tight_layout()
-# =============================================================================
-
-
-'''Code snippets'''
-
-
-# plotting subplots "manually"
-
-# =============================================================================
-# fig, axs = plt.subplots(2, 2)
-# fig.suptitle('DLC_data Quartiles')
-#
-# axs[0, 0].scatter(x0, y0, c='blue')
-# axs[0, 0].set_title('Quartile 1')
-#
-# axs[0, 1].scatter(x1, y1, c='orange')
-# axs[0, 1].set_title('Quartile 2')
-#
-#
-# axs[1, 0].scatter(x2, y2, c='green')
-# axs[1, 0].set_title('Quartile 3')
-#
-# axs[1, 1].scatter(x3, y3, c='red')
-# axs[1, 1].set_title('Quartile 4')
-#
-# plt.tight_layout()
-# =============================================================================
-
-
-# Split the data of the file into 4 parts (or quartiles)
-# =============================================================================
-# quartiles = np.array(dlc_data)
-# quartiles = np.array_split(quartiles, 4)
-# =============================================================================
