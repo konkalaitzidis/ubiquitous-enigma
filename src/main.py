@@ -7,7 +7,7 @@ Created on Tue Sep  6 13:15:00 2022
 
 A module-level docstring
 
-This is the a draft custome-made pipeline to analyze behavioral, tracking, and
+This is the a draft custom-made pipeline to analyze behavioral, tracking, and
 calcium imagery data.
 """
 # %% Importing Packages and Libraries
@@ -19,19 +19,28 @@ import numpy as np
 
 # Data Visualization
 import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 # Functions
 import calculate_distance
+from dataset_info import info
+from missing_info import missing_info_data
+
 
 # %% Data Preparation
+
 
 # Preparing behavioral data file
 beh_data = pd.read_csv(
     "/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIlab/data files/Behavioral Region of Interest/tmaze_2021-10-16T17_05_25.csv")
 
 # Renaming column '2021-10-16T17:05:26.6032384+02:00' to 'Time'
-beh_data = beh_data.rename(columns={'2021-10-16T17:05:26.6032384+02:00': 'Time', '0': 'Choice',
-                           '0.1': 'Init-Reward', 'False': 'Initiation', 'False.1': 'Incorrect', 'False.2': 'Reward'})
+beh_data = beh_data.rename(columns={
+    '2021-10-16T17:05:26.6032384+02:00': 'Time', '0': 'Choice',
+    '0.1': 'Init-Reward', 'False': 'Initiation',
+    'False.1': 'Incorrect', 'False.2': 'Reward'})
+
 
 # Preparing deep lab cut file
 dlc_data = pd.read_hdf(
@@ -41,8 +50,10 @@ dlc_data = pd.read_hdf(
 dlc_data[dlc_data.shape[1]] = 0
 dlc_data = dlc_data.rename(columns={24: 'Time'})
 
-# reading the h5 file that contains the deeplabcut and calcium imaging
+
+# Reading the h5 file that contains the deeplabcut and calcium imaging
 pathname = "/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/striatum-2choice/data/arrowmaze_data2.h5"
+
 with pd.HDFStore(pathname) as hdf:
     # This prints a list of all group names:
     print("Reading the h5 file that contains the deeplabcut and calcium imaging data...")
@@ -50,47 +61,38 @@ with pd.HDFStore(pathname) as hdf:
 h5_file = pd.read_hdf(pathname, key="/meta")
 
 
-'''Removing the date part from the datetime values to keep only seconds'''
-# converting the 'Time' column to time format
+# Removing the date part from the datetime values to keep only seconds
 beh_data['Time'] = pd.to_datetime(beh_data['Time'])
-
-
-# subtracting the first time element from all the other times in the column
 beh_data.iloc[:, 0] = beh_data.iloc[:, 0] - beh_data.iloc[0, 0]
-
-
-# convert column to seconds
 beh_data['Time'] = beh_data.iloc[:, 0].dt.total_seconds()
 
 
-'''Adding the time to the dlc_data file with the according step.'''
-
-# Finding the step: total time (last time element) / the number of rows of the dlc file
-total_time = beh_data.iat[len(beh_data) - 1, 0]   # 1233.927104
+# Adding the time to the dlc_data file with the according step.
+'''
+Finding the step:
+    total time (last time element) /
+    the number of row of the dlc file
+'''
+total_time = beh_data.iat[len(beh_data) - 1, 0]
 step = total_time / len(dlc_data)
-# print(step)                                      #0.016609375348292526
 
-
-# fill in data in the last column (Time column) with the time
+# Fill in data in the last column (Time column) with the time
 dlc_data.iloc[:, 24] = range(len(dlc_data))*step
+print("Added TIME values to the dlc file with step", step)
 
 
 # %% Understanding our datasets
 
+datafile_names = {'behavioral data': beh_data,
+                  'tracking data': dlc_data, 'h5': h5_file}
+info(datafile_names)
 
-# What are some information about our datasets?
-# dataset_info()
-
-
-# Checking for missing data
-# missing_info()
 
 # %% Store processed data
 
-# %% Calculations
+# %% Processing
 
-
-'''Calculate the average speed, the standard deviation, and the standard error of the mean 
+'''Calculate the average speed, the standard deviation, and the standard error of the mean
 of the mouse on the behavioral file according to the coordinates on the dlc file'''
 
 speed_list = []  # list where speed values will be stored
