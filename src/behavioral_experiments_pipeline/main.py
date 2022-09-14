@@ -32,6 +32,7 @@ from dataset_info import info
 print("\n\n\n=====> Data Preparation... <===== \n\n\n")
 
 # Preparing behavioral data file
+# /Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIlab/data files/Behavioral Region of Interest/tmaze_2021-10-16T17_05_25.csv
 beh_data_path = input("Insert path of behavioral data file here: ")
 beh_data = pd.read_csv(beh_data_path)
 
@@ -44,6 +45,7 @@ beh_data = beh_data.rename(columns={
 
 
 # Preparing deep lab cut file
+# /Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIlab/data files/Deep lab cut/tmaze_2021-10-16T16_39_15DLC_resnet50_Oprm1_insc_VAS_reversalNov18shuffle1_1030000.h5
 dlc_data_path = input("Insert path of dlc data file here: ")
 dlc_data = pd.read_hdf(dlc_data_path)
 
@@ -53,17 +55,26 @@ dlc_data[dlc_data.shape[1]] = 0
 dlc_data = dlc_data.rename(columns={24: 'Time'})
 
 
-# Reading the h5 file that contains the deeplabcut and calcium imaging
-h5_file_path = input("Insert path of h5 file here: ")
-# =============================================================================
+# # Reading the h5 file that contains the deeplabcut and calcium imaging
 # pathname = "/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/striatum-2choice/data/arrowmaze_data2.h5"
-#
-# =============================================================================
-with pd.HDFStore(h5_file_path) as hdf:
+
+# with pd.HDFStore(pathname) as hdf:
+#     # This prints a list of all group names:
+#     print("Reading the h5 file that contains the deeplabcut and calcium imaging data...")
+
+# h5_file = pd.read_hdf(pathname, key="/meta")
+
+
+# Reading the h5 file that contains the deeplabcut and calcium imaging
+# /Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/arrowmaze_data2.h5
+pathname = input("Insert path of h5 file here: ")
+#pathname = "" + str(pathname) + ""
+#pathname = "/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/striatum-2choice/data/arrowmaze_data2.h5"
+with pd.HDFStore(pathname) as hdf:
     # This prints a list of all group names:
     print("Reading the h5 file that contains the deeplabcut and calcium imaging data...")
 
-h5_file = pd.read_hdf(h5_file_path, key="/meta")
+h5_file = pd.read_hdf(pathname, key="/meta")
 
 
 # Removing the date part from the datetime values to keep only seconds
