@@ -32,7 +32,7 @@ from dataset_info import info
 print("\n\n\n=====> Data Preparation... <===== \n\n\n")
 
 # Preparing behavioral data file
-# /Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIlab/data files/Behavioral Region of Interest/tmaze_2021-10-16T17_05_25.csv
+# path: /Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/KIlab/data files/Behavioral Region of Interest/tmaze_2021-10-16T17_05_25.csv
 beh_data_path = input("Insert path of behavioral data file here: ")
 beh_data = pd.read_csv(beh_data_path)
 
@@ -55,18 +55,8 @@ dlc_data[dlc_data.shape[1]] = 0
 dlc_data = dlc_data.rename(columns={24: 'Time'})
 
 
-# # Reading the h5 file that contains the deeplabcut and calcium imaging
-# pathname = "/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/striatum-2choice/data/arrowmaze_data2.h5"
-
-# with pd.HDFStore(pathname) as hdf:
-#     # This prints a list of all group names:
-#     print("Reading the h5 file that contains the deeplabcut and calcium imaging data...")
-
-# h5_file = pd.read_hdf(pathname, key="/meta")
-
-
 # Reading the h5 file that contains the deeplabcut and calcium imaging
-# /Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/arrowmaze_data2.h5
+# path: /Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/arrowmaze_data2.h5
 pathname = input("Insert path of h5 file here: ")
 #pathname = "" + str(pathname) + ""
 #pathname = "/Users/pierre.le.merre/OneDrive - KI.SE/Mac/Desktop/arrowmaze_project-main/striatum-2choice/data/arrowmaze_data2.h5"
@@ -220,10 +210,8 @@ plt.tight_layout()
 print("\n\n\n=====> Finding the timestamps of ca detection <===== \n\n\n")
 
 # See where we have the first ca occurnace and print it's timestamp
-
 calcium_detection_times = beh_data.drop_duplicates(subset=['0.3'])
 
-# See where we have the first ca occurnace and print it's timestamp
 detect_time = l_search(beh_data.iloc[:, 7], 1)
 
 # Subtracting the first time of ca detection from all the previous times

@@ -12,7 +12,7 @@ def l_search(values, search_for):
     search_at = 0
     search_res = False
     count = 0
-    detect_time = 0
+    #detect_time = 0
 
     # Match the value with each data element
     while search_at < len(values) and search_res is False:
