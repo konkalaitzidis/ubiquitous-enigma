@@ -28,14 +28,14 @@ print("\n\n\n=====> Data Preparation... <===== \n\n\n")
 
 # Preparing behavioral data file
 beh_data_path = input("Insert path of behavioral data file here: ")
-beh_data = pd.read_csv(beh_data_path)
+beh_data = pd.read_csv(beh_data_path, header=None)
 
 
 # Renaming column '2021-10-16T17:05:26.6032384+02:00' to 'Time'
 beh_data = beh_data.rename(columns={
-    '2021-10-16T17:05:26.6032384+02:00': 'Time', '0': 'Choice',
-    '0.1': 'Init-Reward', 'False': 'Initiation',
-    'False.1': 'Incorrect', 'False.2': 'Reward'})
+    0: 'Time', 1: 'Choice',
+    2: 'Init-Reward', 4: 'Initiation',
+    5: 'Incorrect', 6: 'Reward', 7: 'CA_Signals'})
 
 
 # Preparing deep lab cut file
@@ -80,6 +80,7 @@ print("Added TIME values to the dlc file with step", step)
 
 
 # %% Understanding our datasets
+
 print("\n\n\n=====> Understanding our datasets <===== \n\n\n")
 
 
@@ -90,7 +91,11 @@ info(datafile_names)
 
 # %% Store processed data
 
+# TODO if requested in the future
+
+
 # %% Processing
+
 print("\n\n\n=====> Processing... <===== \n\n\n")
 
 '''Calculate the average speed, the standard deviation, and the standard error of the mean
@@ -144,17 +149,22 @@ print("Also found MAX SPEED and MINIMUM SPEED")
 
 
 # %% Gaussian filtering
+
 print("\n\n\n=====> Performed guassian filtering in the speed list. <===== \n\n\n")
+
 
 # Perform guassian filtering in the speed list
 speed_list = np.array(speed_list)
 
+
 # Stacking the X and Y coordinates columns vertically
 xy = np.vstack([dlc_data.iloc[:, 18], range(len(dlc_data.iloc[:, 19]))])
+
 
 # Applying gaussian filtering
 z = gaussian_kde(xy)(xy)
 fig1, ax = plt.subplots(1, 1)
+
 
 # Plot
 ax.scatter(dlc_data.iloc[:, 18], dlc_data.iloc[:, 19], c=z, s=1)
@@ -168,6 +178,7 @@ plt.show()
 set_quartiles = 4
 quartiles = np.array(dlc_data)
 quartiles = np.array_split(quartiles, set_quartiles)
+
 
 # %% Plotting
 
@@ -194,11 +205,13 @@ for ax, i in zip(axes_list, range(set_quartiles)):
     # plotting for each quartile
     ax.scatter(quartiles[i][:, 18], quartiles[i][:, 19], c=z, s=1)
 
+
 print("\n\n\n=====> Plotting <===== \n\n\n")
 plt.tight_layout()
 
 
 # %% Find the timestamps of ca detection
+
 print("\n\n\n=====> Finding the timestamps of ca detection <===== \n\n\n")
 
 
@@ -211,6 +224,7 @@ search_for = 1  # first instance of calcium signal
 
 detect_time = l_search(ca, search_for, t)
 
+
 # Subtracting the first time of ca detection from all the previous times
 calcium_detection_times.iloc[:,
                              0] = calcium_detection_times.iloc[:, 0] - detect_time
@@ -220,22 +234,20 @@ calcium_detection_times.drop_duplicates(
 
 # %% append ca times to dlc_data df
 
-
 dlc_data.iloc[:, 24] = dlc_data.iloc[:, 24] - detect_time
 
-
 # %% Phase detection
+
 print("\n\n\n=====> Done with Phase detection. Check CALCIUM df. <===== \n\n\n")
 
 # prep the df
 # change the names
 
 calcium_detection_times[calcium_detection_times.shape[1]] = 0
-calcium_detection_times.rename(columns={"8": "ROI"}, inplace=True)
+calcium = calcium_detection_times.rename(columns={8: "ROI"})
 
-calcium = calcium_detection_times
-calcium[8][calcium['Initiation'] == True] = 'Initiation'
-calcium[8][calcium['Incorrect'] == True] = 'Incorrect'
-calcium[8][calcium['Reward'] == True] = 'Reward'
-calcium[8][(calcium['Initiation'] == False) &
-           (calcium['Reward'] == False)] = 'Task'
+calcium["ROI"][calcium['Initiation'] == True] = 'Initiation'
+calcium["ROI"][calcium['Incorrect'] == True] = 'Incorrect'
+calcium["ROI"][calcium['Reward'] == True] = 'Reward'
+calcium["ROI"][(calcium['Initiation'] == False) &
+               (calcium['Reward'] == False)] = 'Task'
