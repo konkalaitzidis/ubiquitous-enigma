@@ -213,8 +213,11 @@ print("\n\n\n=====> Finding the timestamps of ca detection <===== \n\n\n")
 # See where we have the first ca occurnace and print it's timestamp
 calcium_detection_times = beh_data.drop_duplicates(subset=['0.3'])
 
+ca = beh_data.iloc[:, 7]  # column with calcium signals
+t = beh_data.iloc[:, 0]  # column with time
+search_for = 1  # first instance of calcium signal
 
-detect_time = l_search(beh_data.iloc[:, 7], 1)
+detect_time = l_search(ca, search_for, t)
 
 # Subtracting the first time of ca detection from all the previous times
 calcium_detection_times.iloc[:,
