@@ -214,7 +214,7 @@ print("\n\n\n=====> Finding the timestamps of ca detection <===== \n\n\n")
 calcium_detection_times = beh_data.drop_duplicates(subset=['0.3'])
 
 
-detect_time = l_search(beh_data, 1)
+detect_time = l_search(beh_data.iloc[:, 7], 1)
 
 # Subtracting the first time of ca detection from all the previous times
 calcium_detection_times.iloc[:,
