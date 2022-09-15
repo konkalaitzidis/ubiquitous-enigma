@@ -19,6 +19,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import calculate_distance
 from dataset_info import info
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
 # %% Data Preparation
@@ -216,7 +217,7 @@ print("\n\n\n=====> Finding the timestamps of ca detection <===== \n\n\n")
 
 
 # See where we have the first ca occurnace and print it's timestamp
-calcium_detection_times = beh_data.drop_duplicates(subset=['0.3'])
+calcium_detection_times = beh_data.drop_duplicates(subset=['CA_Signals'])
 
 ca = beh_data.iloc[:, 7]  # column with calcium signals
 t = beh_data.iloc[:, 0]  # column with time
