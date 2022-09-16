@@ -9,9 +9,12 @@ A module-level docstring
 
 This is the a draft custom-made pipeline to analyze behavioral, tracking, and
 calcium imagery data.
+
+In collaboration with Thodoris Tamiolakis
 """
 # %% Importing Packages and Libraries
 
+import logging
 from linear_search import l_search
 from scipy.stats import gaussian_kde
 import pandas as pd
@@ -32,7 +35,7 @@ beh_data_path = input("Insert path of behavioral data file here: ")
 beh_data = pd.read_csv(beh_data_path, header=None)
 
 
-# Renaming column '2021-10-16T17:05:26.6032384+02:00' to 'Time'
+# Adding column names
 beh_data = beh_data.rename(columns={
     0: 'Time', 1: 'Choice',
     2: 'Init-Reward', 4: 'Initiation',
