@@ -14,7 +14,7 @@ In collaboration with Thodoris Tamiolakis
 """
 # %% Importing Packages and Libraries
 
-import logging
+import seaborn as sns
 from linear_search import l_search
 from scipy.stats import gaussian_kde
 import pandas as pd
@@ -68,7 +68,7 @@ beh_data.iloc[:, 0] = beh_data.iloc[:, 0] - beh_data.iloc[0, 0]
 beh_data['Time'] = beh_data.iloc[:, 0].dt.total_seconds()
 
 
-# Adding the time to the dlc_data file with the according step.
+# Adding time to the dlc_data file with the according step.
 '''
 Finding the step:
     total time (last time element) /
@@ -213,6 +213,11 @@ for ax, i in zip(axes_list, range(set_quartiles)):
 print("\n\n\n=====> Plotting <===== \n\n\n")
 plt.tight_layout()
 
+# %% find the linear speed of the mouse when turning left for every session.
+
+# TODO
+# create a speed list for one session
+sns.distplot(speed_list)
 
 # %% Find the timestamps of ca detection
 
