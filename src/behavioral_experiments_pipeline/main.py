@@ -110,72 +110,76 @@ of the mouse on the behavioral file according to the coordinates on the dlc file
 
 # List where speed values will be stored
 speed_list = []
-
-
-# Find all the speeds of the mouse
-for index, row in dlc_data.iterrows():
-
-    # control if to exit the function
-    if dlc_data.iat[index, 24] == dlc_data.iat[-1, 24]:
-        print("All speed values have been stored in list successfully.")
-        break
-
-    x1 = dlc_data.iat[index, 18]
-    x2 = dlc_data.iat[index+1, 18]
-    y1 = dlc_data.iat[index, 19]
-    y2 = dlc_data.iat[index + 1, 19]
-
-    distance = calculate_distance.dist_calc(x1, x2, y1, y2)
-    speed = distance / (dlc_data.iat[index+1, 24]-dlc_data.iat[index, 24])
-    speed_list += [speed]
-
-
-# average speed
-print("The mouse's average speed is: ", np.mean(speed_list))
-
-
-# standard deviation
-print("The standard deviation is: ", np.std(speed_list))
-
-
-# standard error of the mean
-print("The standard error of the mean is: ", np.std(
-    speed_list) / np.sqrt(np.size(speed_list)))
-
-
-# sort array in ascending order
-sorted_speed_list = np.sort(speed_list)
-
-
-# find the max speed first.
-max_speed = np.max(sorted_speed_list)
-min_speed = np.min(sorted_speed_list)
-
-print("Also found MAX SPEED and MINIMUM SPEED")
-
+# =============================================================================
+#
+#
+# # Find all the speeds of the mouse
+# for index, row in dlc_data.iterrows():
+#
+#     # control if to exit the function
+#     if dlc_data.iat[index, 24] == dlc_data.iat[-1, 24]:
+#         print("All speed values have been stored in list successfully.")
+#         break
+#
+#     x1 = dlc_data.iat[index, 18]
+#     x2 = dlc_data.iat[index+1, 18]
+#     y1 = dlc_data.iat[index, 19]
+#     y2 = dlc_data.iat[index + 1, 19]
+#
+#     distance = calculate_distance.dist_calc(x1, x2, y1, y2)
+#     speed = distance / (dlc_data.iat[index+1, 24]-dlc_data.iat[index, 24])
+#     speed_list += [speed]
+#
+#
+# # average speed
+# print("The mouse's average speed is: ", np.mean(speed_list))
+#
+#
+# # standard deviation
+# print("The standard deviation is: ", np.std(speed_list))
+#
+#
+# # standard error of the mean
+# print("The standard error of the mean is: ", np.std(
+#     speed_list) / np.sqrt(np.size(speed_list)))
+#
+#
+# # sort array in ascending order
+# sorted_speed_list = np.sort(speed_list)
+#
+#
+# # find the max speed first.
+# max_speed = np.max(sorted_speed_list)
+# min_speed = np.min(sorted_speed_list)
+#
+# print("Also found MAX SPEED and MINIMUM SPEED")
+#
+# =============================================================================
 
 # %% Gaussian filtering
 
-print("\n\n\n=====> Performed guassian filtering in the speed list. <===== \n\n\n")
-
-
-# Perform guassian filtering in the speed list
-speed_list = np.array(speed_list)
-
-
-# Stacking the X and Y coordinates columns vertically
-xy = np.vstack([dlc_data.iloc[:, 18], range(len(dlc_data.iloc[:, 19]))])
-
-
-# Applying gaussian filtering
-z = gaussian_kde(xy)(xy)
-fig1, ax = plt.subplots(1, 1)
-
-
-# Plot
-ax.scatter(dlc_data.iloc[:, 18], dlc_data.iloc[:, 19], c=z, s=1)
-plt.show()
-
+# =============================================================================
+# print("\n\n\n=====> Performed guassian filtering in the speed list. <===== \n\n\n")
+#
+#
+# # Perform guassian filtering in the speed list
+# speed_list = np.array(speed_list)
+#
+#
+# # Stacking the X and Y coordinates columns vertically
+# xy = np.vstack([dlc_data.iloc[:, 18], range(len(dlc_data.iloc[:, 19]))])
+#
+#
+# # Applying gaussian filtering
+# z = gaussian_kde(xy)(xy)
+# fig1, ax = plt.subplots(1, 1)
+#
+#
+# # Plot
+# ax.scatter(dlc_data.iloc[:, 18], dlc_data.iloc[:, 19], c=z, s=1)
+# plt.show()
+#
+# =============================================================================
 
 # %% Creating quartiles
 
@@ -188,72 +192,117 @@ quartiles = np.array_split(quartiles, set_quartiles)
 
 # %% Plotting
 
-'''Create a plot with N number of subplots showing the different quartiles of
-of the dlc_data and apply guassia smoothing to each subplot'''
+# =============================================================================
+# '''Create a plot with N number of subplots showing the different quartiles of
+# of the dlc_data and apply guassia smoothing to each subplot'''
+#
+#
+# plotRows = 2
+# plotColumns = 2
+#
+# # Creating 4 (or N) subplots and unpacking the output array immediately
+# # Perform guassian filtering in the data
+#
+# fig2, axs = plt.subplots(plotRows, plotColumns)
+# axes_list = [axs[0, 0], axs[0, 1], axs[1, 0], axs[1, 1]]
+#
+#
+# for ax, i in zip(axes_list, range(set_quartiles)):
+#
+#     # filtering for each quartile
+#     xy = np.vstack([quartiles[i][:, 18], range(len(quartiles[i][:, 19]))])
+#     z = gaussian_kde(xy)(xy)
+#
+#     # plotting for each quartile
+#     ax.scatter(quartiles[i][:, 18], quartiles[i][:, 19], c=z, s=1)
+#
+#
+# print("\n\n\n=====> Plotting <===== \n\n\n")
+# plt.tight_layout()
+#
+# =============================================================================
+# %% Finding the speed of the mouse for Initiation-Reward trials
+
+speed_list = pd.Series(speed_list)  # speed values of mice for whole session
+speed_time = dlc_data.iloc[:, -1]  # time values for whole session
 
 
-plotRows = 2
-plotColumns = 2
-
-# Creating 4 (or N) subplots and unpacking the output array immediately
-# Perform guassian filtering in the data
-
-fig2, axs = plt.subplots(plotRows, plotColumns)
-axes_list = [axs[0, 0], axs[0, 1], axs[1, 0], axs[1, 1]]
+# Speed dataframe
+speed_df = pd.DataFrame({'TIME': speed_time})
+speed_df['SPEED'] = pd.Series(speed_list)
 
 
-for ax, i in zip(axes_list, range(set_quartiles)):
-
-    # filtering for each quartile
-    xy = np.vstack([quartiles[i][:, 18], range(len(quartiles[i][:, 19]))])
-    z = gaussian_kde(xy)(xy)
-
-    # plotting for each quartile
-    ax.scatter(quartiles[i][:, 18], quartiles[i][:, 19], c=z, s=1)
-
-
-print("\n\n\n=====> Plotting <===== \n\n\n")
-plt.tight_layout()
-
-# %% find the linear speed of the mouse when turning left for every session.
-
-# TODO
-# plot time(x) and speed(y)
-
-speed_time = dlc_data.iloc[:, -1]
-
-
-# creating dataframe
-speed_df = pd.DataFrame({'TIME': speed_time.iloc[:50]})
-speed_df['SPEED'] = pd.Series(speed_list.iloc[:50])
-
-
-# normalization
-
+# Normalization
 x = speed_df.values  # returns a numpy array
 min_max_scaler = preprocessing.MinMaxScaler()
 x_scaled = min_max_scaler.fit_transform(x)
 speed_df = pd.DataFrame(x_scaled)
 
-# plotting a line graph
+
+# Plotting a line graph
 print("Line graph: ")
 plt.plot(speed_df[0], speed_df[1])
 plt.xlabel("Session Period")
 plt.ylabel("Instantaneous Speed")
 plt.show()
 
-# show only left turn speeds
-# plot one random point of coordinates in the arrow maze
-print("random one point of the mouse in the arrow maze on a random point in time during the specific session")
+
+# Find and plot only left turn coordinates
 
 
-coords_df = pd.concat([dlc_data.iloc[:, 18], dlc_data.iloc[:, 19]], axis=1)
+col0 = dlc_data.iloc[:, 18]
+col1 = dlc_data.iloc[:, 19]
+coords_df = pd.concat([col0, col1], axis=1)  # x, y coordinates dataframe
 
-# delete outliers
+# left turning coordinates x & y
+lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
+lcy = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 700)
 
-coords_df = coords_df[(np.abs(stats.zscore(coords_df)) < 3).all(axis=1)]
-plt.scatter(coords_df.iloc[:, 0], coords_df.iloc[:, 1])
+# x = speed_df.values  # returns a numpy array
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(x)
+# speed_df = pd.DataFrame(x_scaled)
+
+plt.scatter(lcx, lcy, s=0.05)
+plt.xlabel("X")
+plt.ylabel("Y")
 plt.show()
+
+
+# Create coordinate bins
+''' Phases:
+    bin_1 = Initiation
+    bin_2 = Initiation -> Choice
+    bin_3 = Choice
+    bin_4 = Choice -> Reward
+    bin_5 = Reward '''
+
+set_bins = 5
+bins = np.array(coords_df)
+bins = np.array_split(bins, set_bins)
+
+plotRows = 3
+plotColumns = 2
+
+# Creating 5 subplots and unpacking the output array immediately
+# Perform guassian filtering in the data
+
+fig2, axs = plt.subplots(plotRows, plotColumns)
+axes_list = [axs[0, 0], axs[0, 1], axs[1, 0], axs[1, 1], axs[2, 0]]
+
+
+for ax, i in zip(axes_list, range(set_bins)):
+
+    # # filtering for each quartile
+    # xy = np.vstack([bins[i][:, 18], range(len(bins[i][:, 19]))])
+    # z = gaussian_kde(xy)(xy)
+
+    # plotting for each quartile
+    ax.scatter(bins[i], bins[i], s=0.05)
+
+
+print("\n\n\n=====> Plotting <===== \n\n\n")
+plt.tight_layout()
 
 
 # %% Find the timestamps of ca detection
