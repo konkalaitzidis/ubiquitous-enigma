@@ -258,6 +258,8 @@ coords_df = pd.concat([col0, col1], axis=1)  # x, y coordinates dataframe
 lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
 lcy = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 700)
 
+coords_df = pd.concat([lcx, lcy], axis=1)
+
 # x = speed_df.values  # returns a numpy array
 # min_max_scaler = preprocessing.MinMaxScaler()
 # x_scaled = min_max_scaler.fit_transform(x)
@@ -276,6 +278,7 @@ plt.show()
     bin_3 = Choice
     bin_4 = Choice -> Reward
     bin_5 = Reward '''
+
 
 set_bins = 5
 bins = np.array(coords_df)
