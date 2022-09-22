@@ -284,9 +284,8 @@ bins = np.array_split(bins, set_bins)
 plotRows = 3
 plotColumns = 2
 
-# Creating 5 subplots and unpacking the output array immediately
-# Perform guassian filtering in the data
 
+# Creating 5 subplots of phase bins
 fig2, axs = plt.subplots(plotRows, plotColumns)
 axes_list = [axs[0, 0], axs[0, 1], axs[1, 0], axs[1, 1], axs[2, 0]]
 
@@ -298,7 +297,7 @@ for ax, i in zip(axes_list, range(set_bins)):
     # z = gaussian_kde(xy)(xy)
 
     # plotting for each quartile
-    ax.scatter(bins[i], bins[i], s=0.05)
+    ax.scatter(bins[i][:, 0], bins[i][:, 1], s=0.05)
 
 
 print("\n\n\n=====> Plotting <===== \n\n\n")
