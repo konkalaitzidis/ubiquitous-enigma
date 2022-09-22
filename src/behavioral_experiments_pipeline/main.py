@@ -14,6 +14,8 @@ In collaboration with Thodoris Tamiolakis
 """
 # %% Importing Packages and Libraries
 
+from scipy import stats
+from sklearn import preprocessing
 import seaborn as sns
 from linear_search import l_search
 from scipy.stats import gaussian_kde
@@ -216,8 +218,43 @@ plt.tight_layout()
 # %% find the linear speed of the mouse when turning left for every session.
 
 # TODO
-# create a speed list for one session
-sns.distplot(speed_list)
+# plot time(x) and speed(y)
+
+speed_time = dlc_data.iloc[:, -1]
+
+
+# creating dataframe
+speed_df = pd.DataFrame({'TIME': speed_time.iloc[:50]})
+speed_df['SPEED'] = pd.Series(speed_list.iloc[:50])
+
+
+# normalization
+
+x = speed_df.values  # returns a numpy array
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(x)
+speed_df = pd.DataFrame(x_scaled)
+
+# plotting a line graph
+print("Line graph: ")
+plt.plot(speed_df[0], speed_df[1])
+plt.xlabel("Session Period")
+plt.ylabel("Instantaneous Speed")
+plt.show()
+
+# show only left turn speeds
+# plot one random point of coordinates in the arrow maze
+print("random one point of the mouse in the arrow maze on a random point in time during the specific session")
+
+
+coords_df = pd.concat([dlc_data.iloc[:, 18], dlc_data.iloc[:, 19]], axis=1)
+
+# delete outliers
+
+coords_df = coords_df[(np.abs(stats.zscore(coords_df)) < 3).all(axis=1)]
+plt.scatter(coords_df.iloc[:, 0], coords_df.iloc[:, 1])
+plt.show()
+
 
 # %% Find the timestamps of ca detection
 
