@@ -273,16 +273,44 @@ plt.show()
 
 # Create coordinate bins
 ''' Phases:
-    bin_1 = Initiation
+    bin_1 = Initiation > x500 and <y300
     bin_2 = Initiation -> Choice
     bin_3 = Choice
     bin_4 = Choice -> Reward
     bin_5 = Reward '''
 
 
+# # bin_1 | Initiation
+# init_x = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] > 500)
+# init_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 300)
+# init_df = pd.concat([init_x, init_y], axis=1)
+
+# plt.scatter(init_x, init_y, s=0.05)
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.show()
+
+
+# # bin_2 | Initiation -> Choice
+# # init_ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 280) & (coords_df.iloc[:, 0] < 500))
+# # init_ch_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 300))
+# init_ch_x = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] > 280)
+# init_ch_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 600)
+# init_ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
+
+# plt.scatter(init_ch_x, init_ch_y, s=0.05)
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.show()
+
+
 set_bins = 5
 bins = np.array(coords_df)
+
+# do the splitting right from the beginning
+
 bins = np.array_split(bins, set_bins)
+
 
 plotRows = 3
 plotColumns = 2
