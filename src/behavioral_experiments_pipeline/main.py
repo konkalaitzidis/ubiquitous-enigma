@@ -280,36 +280,77 @@ plt.show()
     bin_5 = Reward '''
 
 
-# # bin_1 | Initiation
-# init_x = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] > 500)
-# init_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 300)
-# init_df = pd.concat([init_x, init_y], axis=1)
+# bin_1 | Initiation
+init_x = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] > 500)
+init_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 300)
+init_df = pd.concat([init_x, init_y], axis=1)
 
-# plt.scatter(init_x, init_y, s=0.05)
-# plt.xlabel("X")
-# plt.ylabel("Y")
-# plt.show()
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(init_df)
 
-
-# # bin_2 | Initiation -> Choice
-# # init_ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 280) & (coords_df.iloc[:, 0] < 500))
-# # init_ch_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 300))
-# init_ch_x = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] > 280)
-# init_ch_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 600)
-# init_ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
-
-# plt.scatter(init_ch_x, init_ch_y, s=0.05)
-# plt.xlabel("X")
-# plt.ylabel("Y")
-# plt.show()
+plt.scatter(init_x, init_y, s=5, c='#800000')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
 
 
-set_bins = 5
-bins = np.array(coords_df)
+# bin_2 | Initiation -> Choice
+init_ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 280) & (coords_df.iloc[:, 0] < 500))
+init_ch_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 300))
+init_ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
 
-# do the splitting right from the beginning
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(init_ch_df)
 
-bins = np.array_split(bins, set_bins)
+plt.scatter(init_ch_x, init_ch_y, s=5, c='#8B0000')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
+
+
+# bin_3 | Choice
+ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 150) & (coords_df.iloc[:, 0] < 280))
+ch_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] > 600)
+ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(ch_df)
+
+plt.scatter(ch_x, ch_y, s=5, c='#B22222')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
+
+
+# bin_4 | Choice -> Reward
+ch_rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
+ch_rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 350))
+ch_rew_df = pd.concat([init_ch_x, init_ch_y], axis=1)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(ch_rew_df)
+
+plt.scatter(ch_rew_x, ch_rew_y, s=5, c='#DC143C')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
+
+
+# bin_5 | Reward
+rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
+rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 350) & (coords_df.iloc[:, 1] > 240))
+rew_df = pd.concat([init_ch_x, init_ch_y], axis=1)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(rew_df)
+
+plt.scatter(rew_x, rew_y, s=5, c='#FF0000')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
+
+
+#bins = np.array_split(bins, set_bins)
 
 
 plotRows = 3
@@ -320,6 +361,15 @@ plotColumns = 2
 fig2, axs = plt.subplots(plotRows, plotColumns)
 axes_list = [axs[0, 0], axs[0, 1], axs[1, 0], axs[1, 1], axs[2, 0]]
 
+set_bins = 5
+bin_1 = np.array(init_df)
+bin_2 = np.array(init_ch_df)
+bin_3 = np.array(ch_df)
+bin_4 = np.array(ch_rew_df)
+bin_5 = np.array(rew_df)
+
+# a list of all numpy arrays
+bins = [bin_1, bin_2, bin_3, bin_4, bin_5]
 
 for ax, i in zip(axes_list, range(set_bins)):
 
@@ -329,6 +379,7 @@ for ax, i in zip(axes_list, range(set_bins)):
 
     # plotting for each quartile
     ax.scatter(bins[i][:, 0], bins[i][:, 1], s=0.05)
+    i = i+1
 
 
 print("\n\n\n=====> Plotting <===== \n\n\n")
