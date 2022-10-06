@@ -371,16 +371,14 @@ bin_5 = np.array(rew_df)
 # a list of all numpy arrays
 bins = [bin_1, bin_2, bin_3, bin_4, bin_5]
 
-for ax, i in zip(axes_list, range(set_bins)):
+for i in range(set_bins):
 
     # # filtering for each quartile
     # xy = np.vstack([bins[i][:, 18], range(len(bins[i][:, 19]))])
     # z = gaussian_kde(xy)(xy)
 
     # plotting for each quartile
-    ax.scatter(bins[i][:, 0], bins[i][:, 1], s=0.05)
-    i = i+1
-
+    axs.scatter(bins[i][:, 0], bins[i][:, 1], s=0.05)
 
 print("\n\n\n=====> Plotting <===== \n\n\n")
 plt.tight_layout()
