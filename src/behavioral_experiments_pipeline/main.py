@@ -10,10 +10,10 @@ A module-level docstring
 This is the a draft custom-made pipeline to analyze behavioral, tracking, and
 calcium imagery data.
 
-In collaboration with Thodoris Tamiolakis
 """
 # %% Importing Packages and Libraries
 
+from sklearn.preprocessing import normalize
 from scipy import stats
 from sklearn import preprocessing
 import seaborn as sns
@@ -311,7 +311,7 @@ plt.show()
 # bin_3 | Choice
 ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 150) & (coords_df.iloc[:, 0] < 280))
 ch_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] > 600)
-ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
+ch_df = pd.concat([ch_x, ch_y], axis=1)
 
 min_max_scaler = preprocessing.MinMaxScaler()
 x_scaled = min_max_scaler.fit_transform(ch_df)
@@ -325,7 +325,7 @@ plt.show()
 # bin_4 | Choice -> Reward
 ch_rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
 ch_rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 350))
-ch_rew_df = pd.concat([init_ch_x, init_ch_y], axis=1)
+ch_rew_df = pd.concat([ch_rew_x, ch_rew_y], axis=1)
 
 min_max_scaler = preprocessing.MinMaxScaler()
 x_scaled = min_max_scaler.fit_transform(ch_rew_df)
@@ -339,7 +339,7 @@ plt.show()
 # bin_5 | Reward
 rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
 rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 350) & (coords_df.iloc[:, 1] > 240))
-rew_df = pd.concat([init_ch_x, init_ch_y], axis=1)
+rew_df = pd.concat([rew_x, rew_y], axis=1)
 
 min_max_scaler = preprocessing.MinMaxScaler()
 x_scaled = min_max_scaler.fit_transform(rew_df)
@@ -371,14 +371,19 @@ bin_5 = np.array(rew_df)
 # a list of all numpy arrays
 bins = [bin_1, bin_2, bin_3, bin_4, bin_5]
 
-for i in range(set_bins):
+# normalizing our numpy arrays
+# remove all NaN data
+
+
+for axs, i in zip(axes_list, range(set_bins)):
 
     # # filtering for each quartile
     # xy = np.vstack([bins[i][:, 18], range(len(bins[i][:, 19]))])
     # z = gaussian_kde(xy)(xy)
 
     # plotting for each quartile
-    axs.scatter(bins[i][:, 0], bins[i][:, 1], s=0.05)
+    axs.scatter(bins[i][:, 0], bins[i][:, 1], s=1)
+
 
 print("\n\n\n=====> Plotting <===== \n\n\n")
 plt.tight_layout()
