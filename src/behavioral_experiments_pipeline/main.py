@@ -341,16 +341,11 @@ rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.ilo
 rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 350) & (coords_df.iloc[:, 1] > 240))
 rew_df = pd.concat([rew_x, rew_y], axis=1)
 
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(rew_df)
 
 plt.scatter(rew_x, rew_y, s=5, c='#FF0000')
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
-
-
-#bins = np.array_split(bins, set_bins)
 
 
 plotRows = 3
@@ -368,22 +363,21 @@ bin_3 = np.array(ch_df)
 bin_4 = np.array(ch_rew_df)
 bin_5 = np.array(rew_df)
 
+# # have subplot titles
+# for i in range(set_bins):
+#     axes_list.title.set_text('% plot', i)
+
 # a list of all numpy arrays
 bins = [bin_1, bin_2, bin_3, bin_4, bin_5]
 
-# normalizing our numpy arrays
-# remove all NaN data
-
+min_max_scaler = preprocessing.MinMaxScaler()
 
 for axs, i in zip(axes_list, range(set_bins)):
-
-    # # filtering for each quartile
-    # xy = np.vstack([bins[i][:, 18], range(len(bins[i][:, 19]))])
-    # z = gaussian_kde(xy)(xy)
-
-    # plotting for each quartile
-    axs.scatter(bins[i][:, 0], bins[i][:, 1], s=1)
-
+    # normalizing data
+    # bins[i] = min_max_scaler.fit_transform(bins[i])
+    print(f"Minimum value in data is: {np.min(bins[i])}")
+    print(f"Maximum value in data is: {np.max(bins[i])}")
+    axs.scatter(bins[i][:, 0], bins[i][:, 1], s=0.5)
 
 print("\n\n\n=====> Plotting <===== \n\n\n")
 plt.tight_layout()
