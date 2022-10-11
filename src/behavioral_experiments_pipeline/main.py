@@ -110,76 +110,72 @@ of the mouse on the behavioral file according to the coordinates on the dlc file
 
 # List where speed values will be stored
 speed_list = []
-# =============================================================================
-#
-#
-# # Find all the speeds of the mouse
-# for index, row in dlc_data.iterrows():
-#
-#     # control if to exit the function
-#     if dlc_data.iat[index, 24] == dlc_data.iat[-1, 24]:
-#         print("All speed values have been stored in list successfully.")
-#         break
-#
-#     x1 = dlc_data.iat[index, 18]
-#     x2 = dlc_data.iat[index+1, 18]
-#     y1 = dlc_data.iat[index, 19]
-#     y2 = dlc_data.iat[index + 1, 19]
-#
-#     distance = calculate_distance.dist_calc(x1, x2, y1, y2)
-#     speed = distance / (dlc_data.iat[index+1, 24]-dlc_data.iat[index, 24])
-#     speed_list += [speed]
-#
-#
-# # average speed
-# print("The mouse's average speed is: ", np.mean(speed_list))
-#
-#
-# # standard deviation
-# print("The standard deviation is: ", np.std(speed_list))
-#
-#
-# # standard error of the mean
-# print("The standard error of the mean is: ", np.std(
-#     speed_list) / np.sqrt(np.size(speed_list)))
-#
-#
-# # sort array in ascending order
-# sorted_speed_list = np.sort(speed_list)
-#
-#
-# # find the max speed first.
-# max_speed = np.max(sorted_speed_list)
-# min_speed = np.min(sorted_speed_list)
-#
-# print("Also found MAX SPEED and MINIMUM SPEED")
-#
-# =============================================================================
+
+
+# Find all the speeds of the mouse
+for index, row in dlc_data.iterrows():
+
+    # control if to exit the function
+    if dlc_data.iat[index, 24] == dlc_data.iat[-1, 24]:
+        print("All speed values have been stored in list successfully.")
+        break
+
+    x1 = dlc_data.iat[index, 18]
+    x2 = dlc_data.iat[index+1, 18]
+    y1 = dlc_data.iat[index, 19]
+    y2 = dlc_data.iat[index + 1, 19]
+
+    distance = calculate_distance.dist_calc(x1, x2, y1, y2)
+    speed = distance / (dlc_data.iat[index+1, 24]-dlc_data.iat[index, 24])
+    speed_list += [speed]
+
+
+# average speed
+print("The mouse's average speed is: ", np.mean(speed_list))
+
+
+# standard deviation
+print("The standard deviation is: ", np.std(speed_list))
+
+
+# standard error of the mean
+print("The standard error of the mean is: ", np.std(
+    speed_list) / np.sqrt(np.size(speed_list)))
+
+
+# sort array in ascending order
+sorted_speed_list = np.sort(speed_list)
+
+
+# find the max speed first.
+max_speed = np.max(sorted_speed_list)
+min_speed = np.min(sorted_speed_list)
+
+print("Also found MAX SPEED and MINIMUM SPEED")
+
 
 # %% Gaussian filtering
 
-# =============================================================================
-# print("\n\n\n=====> Performed guassian filtering in the speed list. <===== \n\n\n")
-#
-#
-# # Perform guassian filtering in the speed list
-# speed_list = np.array(speed_list)
-#
-#
-# # Stacking the X and Y coordinates columns vertically
-# xy = np.vstack([dlc_data.iloc[:, 18], range(len(dlc_data.iloc[:, 19]))])
-#
-#
-# # Applying gaussian filtering
-# z = gaussian_kde(xy)(xy)
-# fig1, ax = plt.subplots(1, 1)
-#
-#
-# # Plot
-# ax.scatter(dlc_data.iloc[:, 18], dlc_data.iloc[:, 19], c=z, s=1)
-# plt.show()
-#
-# =============================================================================
+print("\n\n\n=====> Performed guassian filtering in the speed list. <===== \n\n\n")
+
+
+# Perform guassian filtering in the speed list
+speed_list = np.array(speed_list)
+
+
+# Stacking the X and Y coordinates columns vertically
+xy = np.vstack([dlc_data.iloc[:, 18], range(len(dlc_data.iloc[:, 19]))])
+
+
+# Applying gaussian filtering
+z = gaussian_kde(xy)(xy)
+fig1, ax = plt.subplots(1, 1)
+
+
+# Plot
+ax.scatter(dlc_data.iloc[:, 18], dlc_data.iloc[:, 19], c=z, s=1)
+plt.show()
+
 
 # %% Creating quartiles
 
@@ -381,6 +377,8 @@ for axs, i in zip(axes_list, range(set_bins)):
 
 print("\n\n\n=====> Plotting <===== \n\n\n")
 plt.tight_layout()
+
+# %% Find the linear and angualr velocity of the animal when it turns left during init -> reward trial
 
 
 # %% Find the timestamps of ca detection
