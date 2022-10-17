@@ -7,8 +7,7 @@ Created on Tue Sep  6 13:15:00 2022
 
 A module-level docstring
 
-This is the a draft custom-made pipeline to analyze behavioral, tracking, and
-calcium imagery data.
+Pipeline to analyze behavioral, tracking, and calcium imagery data.
 
 """
 # %% Importing Packages and Libraries
@@ -248,13 +247,17 @@ plt.show()
 
 col0 = dlc_data.iloc[:, 18]
 col1 = dlc_data.iloc[:, 19]
-coords_df = pd.concat([col0, col1], axis=1)  # x, y coordinates dataframe
+col2 = dlc_data.iloc[:, 24]
+coords_df = pd.concat([col0, col1, col2], axis=1)  # x, y coordinates dataframe and time
+coords_df.isnull().sum()
+
+breakpoint
 
 # left turning coordinates x & y
 lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
 lcy = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 700)
 
-coords_df = pd.concat([lcx, lcy], axis=1)
+coords_df = pd.concat([lcx, lcy, col2], axis=1)
 
 # x = speed_df.values  # returns a numpy array
 # min_max_scaler = preprocessing.MinMaxScaler()
@@ -380,6 +383,79 @@ plt.tight_layout()
 
 # %% Find the linear and angualr velocity of the animal when it turns left during init -> reward trial
 
+
+'''A kernel density estimate (KDE) plot is a method for visualizing the distribution of observations in a dataset, analogous to a histogram. KDE represents the data using a continuous probability density curve in one or more dimensions.'''
+sns.kdeplot(x=coords_df.iloc[:, 0], y=coords_df.iloc[:, 1])
+
+# missing data
+ax = plt.axes()
+sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
+coords_df.isnull().sum()
+
+
+# calculate distnace only for left-turn coordinates
+
+# List where speed values will be stored
+left_speed_list = []
+
+
+# Find all the speeds of the mouse during left turn trajectory
+for index, row in coords_df.iterrows():
+
+    # control if to exit the function
+    if coords_df.iat[index, 1] == coords_df.iat[-1, 1]:
+        print("All speed values have been stored in list successfully.")
+        break
+
+    x1 = coords_df.iat[index, 0]
+    x2 = coords_df.iat[index+1, 0]
+    y1 = coords_df.iat[index, 1]
+    y2 = coords_df.iat[index + 1, 1]
+
+    left_turn_distance = calculate_distance.dist_calc(x1, x2, y1, y2)
+    left_speed = left_turn_distance / (coords_df.iat[index+1, 2]-coords_df.iat[index, 2])
+    left_speed_list += [left_speed]
+
+print(left_speed_list)
+
+# find missing data
+missing_count = 0
+for x in left_speed_list:
+    if np.isnan(left_speed_list).all() == False:
+        missing_count == missing_count+1
+print(missing_count)
+
+
+# data cleaning
+
+# normalize speed_list and coords
+
+left_speed_list = np.array(left_speed_list)
+final_coods_df = np.array(coords_df.iloc[:, :1])
+
+min_max_scaler = preprocessing.MinMaxScaler()
+left_speed_list = min_max_scaler.fit_transform(left_speed_list)
+
+
+a = coords_df.iloc[max(coords_df.iloc[:, 0]), min(coords_df.iloc[:, 1])]
+
+rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
+
+
+# Plotting a line graph
+print("Distance and Speed: ")
+plt.plot(range(74290), left_speed_list)
+plt.xlabel("distance")
+plt.ylabel("Speed")
+plt.show()
+
+# Calculate the euclidean distance
+
+# p = [coords_df.iloc[0, 0], coords_df.iloc[0, 1]] # x, y
+# q = [coords_df.iloc[-1, 0], coords_df.iloc[-1, 1]]
+
+# import math
+# distance = int(math.dist(p, q))
 
 # %% Find the timestamps of ca detection
 
