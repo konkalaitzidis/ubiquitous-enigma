@@ -236,7 +236,7 @@ speed_df = pd.DataFrame(x_scaled)
 
 # Plotting a line graph
 print("Line graph: ")
-plt.plot(speed_df[0], speed_df[1])
+plt.plot(speed_df.iloc[:100, 0], speed_df.iloc[:100, 1])
 plt.xlabel("Session Period")
 plt.ylabel("Instantaneous Speed")
 plt.show()
@@ -244,27 +244,28 @@ plt.show()
 
 # Find and plot only left turn coordinates
 
-
 col0 = dlc_data.iloc[:, 18]
 col1 = dlc_data.iloc[:, 19]
 col2 = dlc_data.iloc[:, 24]
 coords_df = pd.concat([col0, col1, col2], axis=1)  # x, y coordinates dataframe and time
 coords_df.isnull().sum()
 
-breakpoint
 
 # left turning coordinates x & y
 lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
-lcy = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 700)
+lcy = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200))
+# replace missing values with the 0
+lcy.isnull().sum()
+lcy = lcy.fillna(0)
+lcy.isnull().sum()
+
 
 coords_df = pd.concat([lcx, lcy, col2], axis=1)
+coords_df.isnull().sum()
 
-# x = speed_df.values  # returns a numpy array
-# min_max_scaler = preprocessing.MinMaxScaler()
-# x_scaled = min_max_scaler.fit_transform(x)
-# speed_df = pd.DataFrame(x_scaled)
 
-plt.scatter(lcx, lcy, s=0.05)
+plt.scatter(lcx, coords_df.iloc[:, 1].where(
+    (coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200)), s=0.05)
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
@@ -281,11 +282,14 @@ plt.show()
 
 # bin_1 | Initiation
 init_x = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] > 500)
-init_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] < 300)
-init_df = pd.concat([init_x, init_y], axis=1)
+init_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 300) & (coords_df.iloc[:, 1] > 0))
+# init_df = pd.concat([init_x, init_y], axis=1)
 
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(init_df)
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(init_x)
+
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(init_y)
 
 plt.scatter(init_x, init_y, s=5, c='#800000')
 plt.xlabel("X")
@@ -296,10 +300,10 @@ plt.show()
 # bin_2 | Initiation -> Choice
 init_ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 280) & (coords_df.iloc[:, 0] < 500))
 init_ch_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 300))
-init_ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
+# init_ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
 
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(init_ch_df)
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(init_ch_df)
 
 plt.scatter(init_ch_x, init_ch_y, s=5, c='#8B0000')
 plt.xlabel("X")
@@ -310,10 +314,10 @@ plt.show()
 # bin_3 | Choice
 ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 150) & (coords_df.iloc[:, 0] < 280))
 ch_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] > 600)
-ch_df = pd.concat([ch_x, ch_y], axis=1)
+# ch_df = pd.concat([ch_x, ch_y], axis=1)
 
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(ch_df)
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(ch_df)
 
 plt.scatter(ch_x, ch_y, s=5, c='#B22222')
 plt.xlabel("X")
@@ -324,10 +328,10 @@ plt.show()
 # bin_4 | Choice -> Reward
 ch_rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
 ch_rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 350))
-ch_rew_df = pd.concat([ch_rew_x, ch_rew_y], axis=1)
+# ch_rew_df = pd.concat([ch_rew_x, ch_rew_y], axis=1)
 
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(ch_rew_df)
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(ch_rew_df)
 
 plt.scatter(ch_rew_x, ch_rew_y, s=5, c='#DC143C')
 plt.xlabel("X")
@@ -338,7 +342,7 @@ plt.show()
 # bin_5 | Reward
 rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
 rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 350) & (coords_df.iloc[:, 1] > 240))
-rew_df = pd.concat([rew_x, rew_y], axis=1)
+# rew_df = pd.concat([rew_x, rew_y], axis=1)
 
 
 plt.scatter(rew_x, rew_y, s=5, c='#FF0000')
@@ -351,41 +355,41 @@ plotRows = 3
 plotColumns = 2
 
 
-# Creating 5 subplots of phase bins
-fig2, axs = plt.subplots(plotRows, plotColumns)
-axes_list = [axs[0, 0], axs[0, 1], axs[1, 0], axs[1, 1], axs[2, 0]]
+# # Creating 5 subplots of phase bins
+# fig2, axs = plt.subplots(plotRows, plotColumns)
+# axes_list = [axs[0, 0], axs[0, 1], axs[1, 0], axs[1, 1], axs[2, 0]]
 
-set_bins = 5
-bin_1 = np.array(init_df)
-bin_2 = np.array(init_ch_df)
-bin_3 = np.array(ch_df)
-bin_4 = np.array(ch_rew_df)
-bin_5 = np.array(rew_df)
+# set_bins = 5
+# bin_1 = np.array(init_df)
+# bin_2 = np.array(init_ch_df)
+# bin_3 = np.array(ch_df)
+# bin_4 = np.array(ch_rew_df)
+# bin_5 = np.array(rew_df)
 
-# # have subplot titles
-# for i in range(set_bins):
-#     axes_list.title.set_text('% plot', i)
+# # # have subplot titles
+# # for i in range(set_bins):
+# #     axes_list.title.set_text('% plot', i)
 
-# a list of all numpy arrays
-bins = [bin_1, bin_2, bin_3, bin_4, bin_5]
+# # a list of all numpy arrays
+# bins = [bin_1, bin_2, bin_3, bin_4, bin_5]
 
-min_max_scaler = preprocessing.MinMaxScaler()
+# # min_max_scaler = preprocessing.MinMaxScaler()
 
-for axs, i in zip(axes_list, range(set_bins)):
-    # normalizing data
-    # bins[i] = min_max_scaler.fit_transform(bins[i])
-    print(f"Minimum value in data is: {np.min(bins[i])}")
-    print(f"Maximum value in data is: {np.max(bins[i])}")
-    axs.scatter(bins[i][:, 0], bins[i][:, 1], s=0.5)
+# for axs, i in zip(axes_list, range(set_bins)):
+#     # normalizing data
+#     # bins[i] = min_max_scaler.fit_transform(bins[i])
+#     print(f"Minimum value in data is: {np.min(bins[i])}")
+#     print(f"Maximum value in data is: {np.max(bins[i])}")
+#     axs.scatter(bins[i][:, 0], bins[i][:, 1], s=0.5)
 
-print("\n\n\n=====> Plotting <===== \n\n\n")
-plt.tight_layout()
+# print("\n\n\n=====> Plotting <===== \n\n\n")
+# plt.tight_layout()
 
 # %% Find the linear and angualr velocity of the animal when it turns left during init -> reward trial
 
 
 '''A kernel density estimate (KDE) plot is a method for visualizing the distribution of observations in a dataset, analogous to a histogram. KDE represents the data using a continuous probability density curve in one or more dimensions.'''
-sns.kdeplot(x=coords_df.iloc[:, 0], y=coords_df.iloc[:, 1])
+sns.kdeplot(x=lcx, y=lcy.where(lcy > 0))
 
 # missing data
 ax = plt.axes()
@@ -401,6 +405,8 @@ left_speed_list = []
 
 # Find all the speeds of the mouse during left turn trajectory
 for index, row in coords_df.iterrows():
+
+    # left turn only
 
     # control if to exit the function
     if coords_df.iat[index, 1] == coords_df.iat[-1, 1]:
@@ -418,44 +424,26 @@ for index, row in coords_df.iterrows():
 
 print(left_speed_list)
 
-# find missing data
-missing_count = 0
-for x in left_speed_list:
-    if np.isnan(left_speed_list).all() == False:
-        missing_count == missing_count+1
-print(missing_count)
-
-
-# data cleaning
 
 # normalize speed_list and coords
 
-left_speed_list = np.array(left_speed_list)
-final_coods_df = np.array(coords_df.iloc[:, :1])
-
-min_max_scaler = preprocessing.MinMaxScaler()
-left_speed_list = min_max_scaler.fit_transform(left_speed_list)
-
-
-a = coords_df.iloc[max(coords_df.iloc[:, 0]), min(coords_df.iloc[:, 1])]
-
-rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
-
-
-# Plotting a line graph
-print("Distance and Speed: ")
-plt.plot(range(74290), left_speed_list)
-plt.xlabel("distance")
-plt.ylabel("Speed")
-plt.show()
 
 # Calculate the euclidean distance
 
-# p = [coords_df.iloc[0, 0], coords_df.iloc[0, 1]] # x, y
-# q = [coords_df.iloc[-1, 0], coords_df.iloc[-1, 1]]
+# p =
+# q =
 
 # import math
 # distance = int(math.dist(p, q))
+
+
+# # Plotting a line graph
+# print("Distance and Speed: ")
+# plt.plot( )
+# plt.xlabel("distance")
+# plt.ylabel("Speed")
+# plt.show()
+
 
 # %% Find the timestamps of ca detection
 
