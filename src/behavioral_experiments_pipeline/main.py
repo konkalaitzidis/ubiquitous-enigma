@@ -12,6 +12,7 @@ Pipeline to analyze behavioral, tracking, and calcium imagery data.
 """
 # %% Importing Packages and Libraries
 
+import time
 import math
 from sklearn.preprocessing import normalize
 from scipy import stats
@@ -404,9 +405,14 @@ coords_df.isnull().sum()
 # calculate distnace only for left-turn coordinates
 
 
+# get the start time
+st = time.time()
+
 # List where speed values will be stored
 left_speed_list = []
 left_turn_distance_list = []
+total_left_turn_distance_list = []
+total_left_turn_distance = 0
 
 # Find all the speeds of the mouse during left turn trajectory
 for index, row in coords_df.iterrows():
@@ -425,89 +431,101 @@ for index, row in coords_df.iterrows():
 
     left_turn_distance = calculate_distance.dist_calc(x1, x2, y1, y2)
     left_speed = left_turn_distance / (coords_df.iat[index+1, 2]-coords_df.iat[index, 2])
+
+    total_left_turn_distance = total_left_turn_distance + left_turn_distance
+
+    total_left_turn_distance_list += [total_left_turn_distance]
+
     left_turn_distance_list += [left_turn_distance]
-    print(left_turn_distance_list[index])
+    # print(left_turn_distance_list[index])
     left_speed_list += [left_speed]
 
 print(len(left_turn_distance_list))
-print(len(left_speed_list))
-
-# left_turn_distance_list = np.array(left_turn_distance_list)
-# left_speed_list = np.array(left_speed_list)
-
-plt.plot(left_turn_distance_list, left_speed_list)
-plt.xlabel("distance")
-plt.ylabel("Speed")
-plt.show()
+print(len(left_speed_list))  # y
+print(total_left_turn_distance)
 
 
-print(left_speed_list)
-left_speed_list = np.array(left_speed_list).reshape(-1, 1)
-# normalize speed_list and coords
+left_turn_distance_list = np.array(left_turn_distance_list)
+left_speed_list = np.array(left_speed_list)
 
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(left_speed_list)
+# total_left_turn_distance_list = np.array(total_left_turn_distance_list).reshape(-1, 1)
+# left_speed_list = np.array(left_speed_list).reshape(-1, 1)
+# # normalize speed_list and coords
 
-left_turn_distance = np.array(left_turn_distance).reshape(1, -1)
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(left_turn_distance)
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(total_left_turn_distance_list)
 
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(left_speed_list)
 
-# # Plotting a line graph
-print("Distance and Speed: ")
-plt.plot(left_turn_distance, left_speed_list)
-plt.xlabel("distance")
-plt.ylabel("Speed")
-plt.show()
-
-
-# find point a
-max_x = max(coords_df.iloc[:, 0])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 0] == max_x:
-        coords_df_y = coords_df.iloc[index, 1]
-print(coords_df_y)
-point_a = (max_x, coords_df_y)
-
-# find point b
-max_y = max(coords_df.iloc[:, 1])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 1] == max_y:
-        coords_df_x = coords_df.iloc[index, 0]
-print(coords_df_x)
-point_b = (coords_df_x, max_y)
-
-
-# distance b/w a and b
-d1 = math.dist(point_a, point_b)
-# display the result
-print(d1)
-
-# find point c
-min_x = min(coords_df.iloc[:, 0])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 0] == min_x:
-        coords_df_y2 = coords_df.iloc[index, 1]
-print(coords_df_y2)
-point_c = (min_x, coords_df_y2)
-
-d2 = math.dist(point_b, point_c)
-# display the result
-print(d2)
-
-total_distance = d1 + d2
-print(total_distance)
-
+# plt.plot(total_left_turn_distance_list, left_speed_list)
+# plt.xlabel("distance")
+# plt.ylabel("Speed")
+# plt.show()
 
 # total_distance = np.array(total_distance)
 
-# x_axis = np.linspace(0, 1, left_turn_distance_list)
-# y_axis = np.linspace(0, 1, left_speed_list)
+x_axis = np.linspace(0, 1, total_left_turn_distance)
+y_axis = np.linspace(0, 1, left_speed_list)
 
-# plt.plot(x_axis, y_axis)
+plt.plot(x_axis, y_axis)
+plt.show()
 
 
 # plt.plot(range(74291), left_turn_distance)
+
+# get the end time
+et = time.time()
+
+# get the execution time
+elapsed_time = et - st
+print('Execution time:', elapsed_time, 'seconds')
+
+
+# # find point a
+# max_x = max(coords_df.iloc[:, 0])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 0] == max_x:
+#         coords_df_y = coords_df.iloc[index, 1]
+# print(coords_df_y)
+# point_a = (max_x, coords_df_y)
+
+# # find point b
+# max_y = max(coords_df.iloc[:, 1])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 1] == max_y:
+#         coords_df_x = coords_df.iloc[index, 0]
+# print(coords_df_x)
+# point_b = (coords_df_x, max_y)
+
+
+# # distance b/w a and b
+# d1 = math.dist(point_a, point_b)
+# # display the result
+# print(d1)
+
+# # find point c
+# min_x = min(coords_df.iloc[:, 0])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 0] == min_x:
+#         coords_df_y2 = coords_df.iloc[index, 1]
+# print(coords_df_y2)
+# point_c = (min_x, coords_df_y2)
+
+# d2 = math.dist(point_b, point_c)
+
+
+# n = 12
+# a = np.arange(n)
+# x = 2**a
+# y = np.random.rand(n)
+
+# fig = plt.figure(1, figsize=(7, 7))
+# ax1 = fig.add_subplot(211)
+# ax2 = fig.add_subplot(212)
+
+# ax1.plot(x, y)
+# ax1.xaxis.set_ticks(x)
 
 
 # %% Find the timestamps of ca detection
