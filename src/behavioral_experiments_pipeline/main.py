@@ -131,6 +131,7 @@ for index, row in dlc_data.iterrows():
     speed = distance / (dlc_data.iat[index+1, 24]-dlc_data.iat[index, 24])
     speed_list += [speed]
 
+print("The number of instant speeds is:", len(speed_list))
 
 # average speed
 print("The mouse's average speed is: ", np.mean(speed_list))
@@ -183,9 +184,9 @@ plt.show()
 
 # Split the dlc_data array into 4 equal parts (quartiles)
 # Specify how many parts
-set_quartiles = 4
-quartiles = np.array(dlc_data)
-quartiles = np.array_split(quartiles, set_quartiles)
+# set_quartiles = 4
+# quartiles = np.array(dlc_data)
+# quartiles = np.array_split(quartiles, set_quartiles)
 
 
 # %% Plotting
@@ -226,60 +227,113 @@ speed_time = dlc_data.iloc[:, -1]  # time values for whole session
 
 
 # Speed dataframe
-speed_df = pd.DataFrame({'TIME': speed_time})
-speed_df['SPEED'] = pd.Series(speed_list)
+speed_df = pd.DataFrame({'SPEED': speed_list, 'TIME': speed_time})
 
 
-# Normalization
-x = speed_df.values  # returns a numpy array
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(x)
-speed_df = pd.DataFrame(x_scaled)
-
-
-# Plotting a line graph
 print("Line graph: ")
-plt.plot(speed_df.iloc[:100, 0], speed_df.iloc[:100, 1])
-plt.xlabel("Session Period")
-plt.ylabel("Instantaneous Speed")
+plt.plot(speed_df.iloc[:, 1], speed_df.iloc[:, 0])
+plt.xlabel("Session t")
+plt.ylabel("Speed")
 plt.show()
+
+# # Normalization
+# x = np.array(speed_df)  # returns a numpy array
+# min_max_scaler = preprocessing.MinMaxScaler()
+# x_scaled = min_max_scaler.fit_transform(x)
+# x_scaled_speed_df = pd.DataFrame(x_scaled)
+
+
+# # Plotting a line graph - revisit
+# print("Line graph: ")
+# plt.plot(x_scaled_speed_df.iloc[:, 1], x_scaled_speed_df.iloc[:, 0])
+# plt.xlabel("Session Period")
+# plt.ylabel("Instantaneous Speed")
+# plt.show()
 
 
 # Find and plot only left turn coordinates
 
-col0 = dlc_data.iloc[:, 18]
-col1 = dlc_data.iloc[:, 19]
-col2 = dlc_data.iloc[:, 24]
-coords_df = pd.concat([col0, col1, col2], axis=1)  # x, y coordinates dataframe and time
-coords_df.isnull().sum()
+col0 = dlc_data.iloc[:-1, 18]  # x coordinates
+col1 = dlc_data.iloc[:-1, 19]  # y coordinates
+col2 = dlc_data.iloc[:-1, 24]  # time
+col3 = speed_df.iloc[:-1, 0]  # speed values
+coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
 # rename column names
 # coords_df = coords_df.rename(columns={
 #     0: 'x', 1: 'y'})
+
+print("X coordinates: ", col0.size, "& ", col0.isnull().sum())
+print("Y coordinates: ", col1.size, "& ", col1.isnull().sum())
+print("Time: ", col2.size, "& ", col2.isnull().sum())
+print("Speed values: ", col3.size, "& ", col3.isnull().sum())
+print("Coords_df: ", coords_df.size, "& ", coords_df.isnull().sum())
 
 
 # left turning coordinates x & y
 lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
 lcy = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200))
+
 # replace missing values with the 0
-lcy.isnull().sum()
+print("X coordinates: ", lcx.size, "& ", lcx.isnull().sum())
+print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum())
+
 lcy = lcy.fillna(0)
-lcy.isnull().sum()
+print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum())
+# drop all zeros
 
-
-coords_df = pd.concat([lcx, lcy, col2], axis=1)
+coords_df = pd.concat([lcx, lcy, col2, col3], axis=1)
 coords_df.isnull().sum()
 
+coords_df = coords_df[coords_df.iloc[:, 1] != 0]
 
-plt.scatter(lcx, coords_df.iloc[:, 1].where(
-    (coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200)), s=0.05)
+
+plt.scatter(coords_df.iloc[:, 0], coords_df.iloc[:, 1])
 plt.xlabel("X")
 plt.ylabel("Y")
 plt.show()
 
 
+left_turn_time = coords_df.iloc[:, 2]
+left_turn_speeds = coords_df.iloc[:, 3]
+print("Line graph: ")
+plt.plot(left_turn_time, left_turn_speeds)
+plt.xlabel("Session t")
+plt.ylabel("Speed")
+plt.show()
+
+
+# missing data
+ax = plt.axes()
+sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
+coords_df.isnull().sum()
+
+
+# slice a dataset in bins
+set_bins = 20
+coords_quartiles = np.array(coords_df)
+coords_quartiles = np.array_split(coords_quartiles, set_bins)
+average_speed_list = []
+for index in range(set_bins):
+    average_speed = np.mean(coords_quartiles[index][:, 3])
+    average_speed_list += [average_speed]
+    print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
+    index = index+1
+print("Done")
+
+
+# for ax, i in zip(axes_list, range(set_quartiles)):
+#
+#     # filtering for each quartile
+#     xy = np.vstack([quartiles[i][:, 18], range(len(quartiles[i][:, 19]))])
+#     z = gaussian_kde(xy)(xy)
+#
+#     # plotting for each quartile
+#     ax.scatter(quartiles[i][:, 18], quartiles[i][:, 19], c=z, s=1)
+
+
 # Create coordinate bins
 ''' Phases:
-    bin_1 = Initiation > x500 and <y300
+    bin_1 = Initiation
     bin_2 = Initiation -> Choice
     bin_3 = Choice
     bin_4 = Choice -> Reward
@@ -357,8 +411,8 @@ plt.ylabel("Y")
 plt.show()
 
 
-plotRows = 3
-plotColumns = 2
+# plotRows = 3
+# plotColumns = 2
 
 
 # # Creating 5 subplots of phase bins
@@ -416,7 +470,7 @@ total_left_turn_distance_list = []
 total_left_turn_distance = 0
 
 # Find all the speeds of the mouse during left turn trajectory
-for index, row in coords_df.iloc[:1000, :1].iterrows():
+for index, row in coords_df.iloc[:, :1].iterrows():
 
     # left turn only
 
@@ -483,50 +537,56 @@ elapsed_time = et - st
 print('Execution time:', elapsed_time, 'seconds')
 
 
-# find point a
-max_x = max(coords_df.iloc[:, 0])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 0] == max_x:
-        coords_df_y = coords_df.iloc[index, 1]
-print(coords_df_y)
-point_a = (max_x, coords_df_y)
+# average speed
+print("The mouse's average speed is: ", np.mean(speed_list))
 
-# find point b
-max_y = max(coords_df.iloc[:, 1])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 1] == max_y:
-        coords_df_x = coords_df.iloc[index, 0]
-print(coords_df_x)
-point_b = (coords_df_x, max_y)
+# time in relation with speed
+plt.plot(coords_df.iloc[:-1, 2], speed_list)
 
+# # find point a
+# max_x = max(coords_df.iloc[:, 0])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 0] == max_x:
+#         coords_df_y = coords_df.iloc[index, 1]
+# print(coords_df_y)
+# point_a = (max_x, coords_df_y)
 
-# distance b/w a and b
-d1 = math.dist(point_a, point_b)
-# display the result
-print(d1)
-
-# find point c
-min_x = min(coords_df.iloc[:, 0])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 0] == min_x:
-        coords_df_y2 = coords_df.iloc[index, 1]
-print(coords_df_y2)
-point_c = (min_x, coords_df_y2)
-
-d2 = math.dist(point_b, point_c)
-
-total_dist = d1 + d2
+# # find point b
+# max_y = max(coords_df.iloc[:, 1])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 1] == max_y:
+#         coords_df_x = coords_df.iloc[index, 0]
+# print(coords_df_x)
+# point_b = (coords_df_x, max_y)
 
 
-x_inter = interp.interp1d(np.arange(coords_df.iloc[:, 2].size), coords_df.iloc[:, 2])
-x_ = x_inter(np.linspace(0, coords_df.iloc[:, 2].size-1, left_speed_list.size))
-print(len(x_), len(left_speed_list))
-plt.plot(x_, left_speed_list)
-plt.xlabel("time")
-plt.ylabel("Speed")
-plt.show()
+# # distance b/w a and b
+# d1 = math.dist(point_a, point_b)
+# # display the result
+# print(d1)
 
-sns.displot(data=coords_df.iloc[:, 2], x=total_left_turn_distance_list, kind="kde")
+# # find point c
+# min_x = min(coords_df.iloc[:, 0])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 0] == min_x:
+#         coords_df_y2 = coords_df.iloc[index, 1]
+# print(coords_df_y2)
+# point_c = (min_x, coords_df_y2)
+
+# d2 = math.dist(point_b, point_c)
+
+# total_dist = d1 + d2
+
+
+# x_inter = interp.interp1d(np.arange(coords_df.iloc[:, 2].size), coords_df.iloc[:, 2])
+# x_ = x_inter(np.linspace(0, coords_df.iloc[:, 2].size-1, left_speed_list.size))
+# print(len(x_), len(left_speed_list))
+# plt.plot(x_, left_speed_list)
+# plt.xlabel("time")
+# plt.ylabel("Speed")
+# plt.show()
+
+# sns.displot(data=coords_df.iloc[:, 2], x=total_left_turn_distance_list, kind="kde")
 
 
 # n = 12
