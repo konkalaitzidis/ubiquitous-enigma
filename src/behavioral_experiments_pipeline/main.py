@@ -12,6 +12,7 @@ Pipeline to analyze behavioral, tracking, and calcium imagery data.
 """
 # %% Importing Packages and Libraries
 
+import scipy.interpolate as interp
 import time
 import math
 from sklearn.preprocessing import normalize
@@ -415,7 +416,7 @@ total_left_turn_distance_list = []
 total_left_turn_distance = 0
 
 # Find all the speeds of the mouse during left turn trajectory
-for index, row in coords_df.iterrows():
+for index, row in coords_df.iloc[:1000, :1].iterrows():
 
     # left turn only
 
@@ -445,8 +446,8 @@ print(len(left_speed_list))  # y
 print(total_left_turn_distance)
 
 
-left_turn_distance_list = np.array(left_turn_distance_list)
-left_speed_list = np.array(left_speed_list)
+# left_turn_distance_list = np.array(left_turn_distance_list)
+# left_speed_list = np.array(left_speed_list)
 
 # total_left_turn_distance_list = np.array(total_left_turn_distance_list).reshape(-1, 1)
 # left_speed_list = np.array(left_speed_list).reshape(-1, 1)
@@ -458,20 +459,20 @@ left_speed_list = np.array(left_speed_list)
 # min_max_scaler = preprocessing.MinMaxScaler()
 # x_scaled = min_max_scaler.fit_transform(left_speed_list)
 
-# plt.plot(total_left_turn_distance_list, left_speed_list)
-# plt.xlabel("distance")
-# plt.ylabel("Speed")
-# plt.show()
+plt.plot(total_left_turn_distance_list, left_speed_list)
+plt.xlabel("distance")
+plt.ylabel("Speed")
+plt.show()
 
 # total_distance = np.array(total_distance)
 
-x_axis = np.linspace(0, 1, total_left_turn_distance)
-y_axis = np.linspace(0, 1, left_speed_list)
+# x_axis = np.linspace(0, 1, total_left_turn_distance)
+# y_axis = np.linspace(0, 1, left_speed_list)
 
-plt.plot(x_axis, y_axis)
-plt.show()
+# plt.plot(x_axis, y_axis)
+# plt.show()
 
-
+# !sns.displot(data=coords_df.iloc[:, :1], x=coords_df.iloc[:, 0], y=coords_df.iloc[:, 1].where(lcy > 0), kind="kde")
 # plt.plot(range(74291), left_turn_distance)
 
 # get the end time
@@ -482,37 +483,50 @@ elapsed_time = et - st
 print('Execution time:', elapsed_time, 'seconds')
 
 
-# # find point a
-# max_x = max(coords_df.iloc[:, 0])
-# for index, row in coords_df.iterrows():
-#     if coords_df.iloc[index, 0] == max_x:
-#         coords_df_y = coords_df.iloc[index, 1]
-# print(coords_df_y)
-# point_a = (max_x, coords_df_y)
+# find point a
+max_x = max(coords_df.iloc[:, 0])
+for index, row in coords_df.iterrows():
+    if coords_df.iloc[index, 0] == max_x:
+        coords_df_y = coords_df.iloc[index, 1]
+print(coords_df_y)
+point_a = (max_x, coords_df_y)
 
-# # find point b
-# max_y = max(coords_df.iloc[:, 1])
-# for index, row in coords_df.iterrows():
-#     if coords_df.iloc[index, 1] == max_y:
-#         coords_df_x = coords_df.iloc[index, 0]
-# print(coords_df_x)
-# point_b = (coords_df_x, max_y)
+# find point b
+max_y = max(coords_df.iloc[:, 1])
+for index, row in coords_df.iterrows():
+    if coords_df.iloc[index, 1] == max_y:
+        coords_df_x = coords_df.iloc[index, 0]
+print(coords_df_x)
+point_b = (coords_df_x, max_y)
 
 
-# # distance b/w a and b
-# d1 = math.dist(point_a, point_b)
-# # display the result
-# print(d1)
+# distance b/w a and b
+d1 = math.dist(point_a, point_b)
+# display the result
+print(d1)
 
-# # find point c
-# min_x = min(coords_df.iloc[:, 0])
-# for index, row in coords_df.iterrows():
-#     if coords_df.iloc[index, 0] == min_x:
-#         coords_df_y2 = coords_df.iloc[index, 1]
-# print(coords_df_y2)
-# point_c = (min_x, coords_df_y2)
+# find point c
+min_x = min(coords_df.iloc[:, 0])
+for index, row in coords_df.iterrows():
+    if coords_df.iloc[index, 0] == min_x:
+        coords_df_y2 = coords_df.iloc[index, 1]
+print(coords_df_y2)
+point_c = (min_x, coords_df_y2)
 
-# d2 = math.dist(point_b, point_c)
+d2 = math.dist(point_b, point_c)
+
+total_dist = d1 + d2
+
+
+x_inter = interp.interp1d(np.arange(coords_df.iloc[:, 2].size), coords_df.iloc[:, 2])
+x_ = x_inter(np.linspace(0, coords_df.iloc[:, 2].size-1, left_speed_list.size))
+print(len(x_), len(left_speed_list))
+plt.plot(x_, left_speed_list)
+plt.xlabel("time")
+plt.ylabel("Speed")
+plt.show()
+
+sns.displot(data=coords_df.iloc[:, 2], x=total_left_turn_distance_list, kind="kde")
 
 
 # n = 12
