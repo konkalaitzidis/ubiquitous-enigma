@@ -309,16 +309,61 @@ coords_df.isnull().sum()
 
 
 # slice a dataset in bins
-set_bins = 20
+set_bins = 100
 coords_quartiles = np.array(coords_df)
 coords_quartiles = np.array_split(coords_quartiles, set_bins)
 average_speed_list = []
 for index in range(set_bins):
     average_speed = np.mean(coords_quartiles[index][:, 3])
     average_speed_list += [average_speed]
-    print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
+    #print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
     index = index+1
 print("Done")
+
+plt.plot(np.arange(100), average_speed_list)
+plt.xlabel("bins")
+plt.ylabel("avg speeds")
+plt.show()
+
+
+for index in range(set_bins):
+    min_point = min(coords_quartiles[index][:, :1])
+    max_point = max(coords_quartiles[index][:, :1])
+
+
+# find point a
+max_x = max(coords_df.iloc[:, 0])
+for index, row in coords_df.iterrows():
+    if coords_df.iloc[index, 0] == max_x:
+        coords_df_y = coords_df.iloc[index, 1]
+print(coords_df_y)
+point_a = (max_x, coords_df_y)
+
+# find point b
+max_y = max(coords_df.iloc[:, 1])
+for index, row in coords_df.iterrows():
+    if coords_df.iloc[index, 1] == max_y:
+        coords_df_x = coords_df.iloc[index, 0]
+print(coords_df_x)
+point_b = (coords_df_x, max_y)
+
+
+# distance b/w a and b
+d1 = math.dist(point_a, point_b)
+# display the result
+print(d1)
+
+# find point c
+min_x = min(coords_df.iloc[:, 0])
+for index, row in coords_df.iterrows():
+    if coords_df.iloc[index, 0] == min_x:
+        coords_df_y2 = coords_df.iloc[index, 1]
+print(coords_df_y2)
+point_c = (min_x, coords_df_y2)
+
+d2 = math.dist(point_b, point_c)
+
+total_dist = d1 + d2
 
 
 # for ax, i in zip(axes_list, range(set_quartiles)):
