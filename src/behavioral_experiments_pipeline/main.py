@@ -309,7 +309,7 @@ coords_df.isnull().sum()
 
 
 # slice a dataset in bins
-set_bins = 100
+set_bins = 50
 coords_quartiles = np.array(coords_df)
 coords_quartiles = np.array_split(coords_quartiles, set_bins)
 average_speed_list = []
@@ -320,15 +320,54 @@ for index in range(set_bins):
     index = index+1
 print("Done")
 
-plt.plot(np.arange(100), average_speed_list)
+plt.plot(np.arange(set_bins), average_speed_list)
 plt.xlabel("bins")
 plt.ylabel("avg speeds")
 plt.show()
 
 
+d1 = 0
+d2 = 0
+quartile_d = 0  # quartile distance
+quartile_d_list = []
+distance_sum = 0
+speed_list = []
 for index in range(set_bins):
-    min_point = min(coords_quartiles[index][:, :1])
-    max_point = max(coords_quartiles[index][:, :1])
+    # d1 = min(coords_quartiles[index][:, 1])
+    # d2 = max(coords_quartiles[index][:, 1])
+    # quartile_d = d2 - d1
+    # quartile_d_list += [quartile_d]
+    # distance_sum = distance_sum + quartile_d
+    # index = index +
+    # List where speed values will be stored
+
+    # Find all the speeds of the mouse
+    for index in coords_quartiles[index]:
+
+        # control if to exit the function
+        if coords_quartiles[index][index, 2] == coords_quartiles[index][-1, 2]:
+            print("All speed values have been stored in list successfully.")
+            break
+
+        x1 = coords_quartiles[index][index, 0]
+        x2 = coords_quartiles[index][index+1, 0]
+        y1 = coords_quartiles[index][index, 1]
+        y2 = coords_quartiles[index][index + 1, 1]
+
+        distance = calculate_distance.dist_calc(x1, x2, y1, y2)
+        speed = distance / (coords_quartiles[index][index+1, 2] - coords_quartiles[index][index, 2])
+        speed_list += [speed]
+        quartile_d_list += [distance]
+
+    distance_sum = distance_sum + distance
+
+print("Total Distance is: ", distance_sum)
+
+
+plt.plot(np.arange(set_bins), average_speed_list)
+plt.xlabel("bins")
+plt.ylabel("avg speeds")
+plt.show()
 
 
 # find point a
