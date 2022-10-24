@@ -524,7 +524,7 @@ ax = plt.axes()
 sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
 coords_df.isnull().sum()
 
-# %% find average speeds
+# %% Plot distance and speed for the whole left turn
 
 # slice a dataset in bins
 set_bins = 100
@@ -541,7 +541,6 @@ print("Average speed for each bin: \n", average_speed_list, "\n\n")
 
 
 # eucledean distance
-
 bin_distance_list = []
 total_distance = 0
 total_distance_list = []
@@ -553,8 +552,6 @@ for index in range(set_bins):
 print("Calculated distance each bin: \n", bin_distance_list)
 print("Total distance: ", total_distance)
 
-
-#ttttt_dist = euclidean(coords_df.iloc[:, 0], coords_df.iloc[:, 1])
 
 # normalize
 total_distance_list = np.array(total_distance_list)
@@ -573,6 +570,9 @@ plt.plot(x_scaled, y_scaled)
 plt.xlabel("distance")
 plt.ylabel("Speed")
 plt.show()
+
+
+# %%
 
 
 # %% total distance of left turn
