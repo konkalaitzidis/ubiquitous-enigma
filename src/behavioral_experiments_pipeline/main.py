@@ -12,6 +12,7 @@ Pipeline to analyze behavioral, tracking, and calcium imagery data.
 """
 # %% Importing Packages and Libraries
 
+from scipy.spatial.distance import euclidean
 import scipy.interpolate as interp
 import time
 import math
@@ -251,123 +252,48 @@ plt.show()
 # plt.show()
 
 
-# Find and plot only left turn coordinates
+# d1 = 0
+# d2 = 0
+# quartile_d = 0  # quartile distance
+# quartile_d_list = []
+# distance_sum = 0
+# speed_list = []
+# for index in range(set_bins):
+#     # d1 = min(coords_quartiles[index][:, 1])
+#     # d2 = max(coords_quartiles[index][:, 1])
+#     # quartile_d = d2 - d1
+#     # quartile_d_list += [quartile_d]
+#     # distance_sum = distance_sum + quartile_d
+#     # index = index +
+#     # List where speed values will be stored
+#     # Find all the speeds of the mouse
+#     x=0
+#     for x in np.nditer(coords_quartiles[x]):
 
-col0 = dlc_data.iloc[:-1, 18]  # x coordinates
-col1 = dlc_data.iloc[:-1, 19]  # y coordinates
-col2 = dlc_data.iloc[:-1, 24]  # time
-col3 = speed_df.iloc[:-1, 0]  # speed values
-coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
-# rename column names
-# coords_df = coords_df.rename(columns={
-#     0: 'x', 1: 'y'})
+#         # control if to exit the function
+#         if coords_quartiles[index][index, 2] == coords_quartiles[index][-1, 2]:
+#             print("All speed values have been stored in list successfully.")
+#             break
 
-print("X coordinates: ", col0.size, "& ", col0.isnull().sum())
-print("Y coordinates: ", col1.size, "& ", col1.isnull().sum())
-print("Time: ", col2.size, "& ", col2.isnull().sum())
-print("Speed values: ", col3.size, "& ", col3.isnull().sum())
-print("Coords_df: ", coords_df.size, "& ", coords_df.isnull().sum())
+#         x1 = coords_quartiles[x][x, 0]
+#         x2 = coords_quartiles[x][x+1, 0]
+#         y1 = coords_quartiles[x][x, 1]
+#         y2 = coords_quartiles[x][x + 1, 1]
 
+#         distance = calculate_distance.dist_calc(x1, x2, y1, y2)
+#         speed = distance / (coords_quartiles[x][x+1, 2] - coords_quartiles[x][x, 2])
+#         speed_list += [speed]
+#         quartile_d_list += [distance]
+#     # break
+#     distance_sum = distance_sum + distance
 
-# left turning coordinates x & y
-lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
-lcy = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200))
-
-# replace missing values with the 0
-print("X coordinates: ", lcx.size, "& ", lcx.isnull().sum())
-print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum())
-
-lcy = lcy.fillna(0)
-print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum())
-# drop all zeros
-
-coords_df = pd.concat([lcx, lcy, col2, col3], axis=1)
-coords_df.isnull().sum()
-
-coords_df = coords_df[coords_df.iloc[:, 1] != 0]
-
-
-plt.scatter(coords_df.iloc[:, 0], coords_df.iloc[:, 1])
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.show()
+# print("Total Distance is: ", distance_sum)
 
 
-left_turn_time = coords_df.iloc[:, 2]
-left_turn_speeds = coords_df.iloc[:, 3]
-print("Line graph: ")
-plt.plot(left_turn_time, left_turn_speeds)
-plt.xlabel("Session t")
-plt.ylabel("Speed")
-plt.show()
-
-
-# missing data
-ax = plt.axes()
-sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
-coords_df.isnull().sum()
-
-
-# slice a dataset in bins
-set_bins = 50
-coords_quartiles = np.array(coords_df)
-coords_quartiles = np.array_split(coords_quartiles, set_bins)
-average_speed_list = []
-for index in range(set_bins):
-    average_speed = np.mean(coords_quartiles[index][:, 3])
-    average_speed_list += [average_speed]
-    #print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
-    index = index+1
-print("Done")
-
-plt.plot(np.arange(set_bins), average_speed_list)
-plt.xlabel("bins")
-plt.ylabel("avg speeds")
-plt.show()
-
-
-d1 = 0
-d2 = 0
-quartile_d = 0  # quartile distance
-quartile_d_list = []
-distance_sum = 0
-speed_list = []
-for index in range(set_bins):
-    # d1 = min(coords_quartiles[index][:, 1])
-    # d2 = max(coords_quartiles[index][:, 1])
-    # quartile_d = d2 - d1
-    # quartile_d_list += [quartile_d]
-    # distance_sum = distance_sum + quartile_d
-    # index = index +
-    # List where speed values will be stored
-
-    # Find all the speeds of the mouse
-    for index in coords_quartiles[index]:
-
-        # control if to exit the function
-        if coords_quartiles[index][index, 2] == coords_quartiles[index][-1, 2]:
-            print("All speed values have been stored in list successfully.")
-            break
-
-        x1 = coords_quartiles[index][index, 0]
-        x2 = coords_quartiles[index][index+1, 0]
-        y1 = coords_quartiles[index][index, 1]
-        y2 = coords_quartiles[index][index + 1, 1]
-
-        distance = calculate_distance.dist_calc(x1, x2, y1, y2)
-        speed = distance / (coords_quartiles[index][index+1, 2] - coords_quartiles[index][index, 2])
-        speed_list += [speed]
-        quartile_d_list += [distance]
-
-    distance_sum = distance_sum + distance
-
-print("Total Distance is: ", distance_sum)
-
-
-plt.plot(np.arange(set_bins), average_speed_list)
-plt.xlabel("bins")
-plt.ylabel("avg speeds")
-plt.show()
+# plt.plot(np.arange(set_bins), average_speed_list)
+# plt.xlabel("bins")
+# plt.ylabel("avg speeds")
+# plt.show()
 
 
 # find point a
@@ -541,14 +467,120 @@ sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
 coords_df.isnull().sum()
 
 
-# calculate distnace only for left-turn coordinates
+# %% create data
+# Find and plot only left turn coordinates
+
+col0 = dlc_data.iloc[:-1, 18]  # x coordinates
+col1 = dlc_data.iloc[:-1, 19]  # y coordinates
+col2 = dlc_data.iloc[:-1, 24]  # time
+col3 = speed_df.iloc[:-1, 0]  # speed values
+coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
+# rename column names
+# coords_df = coords_df.rename(columns={
+#     0: 'x', 1: 'y'})
+
+print("X coordinates: ", col0.size, "& ", col0.isnull().sum(), " missing values")
+print("Y coordinates: ", col1.size, "& ", col1.isnull().sum(), " missing values")
+print("Time: ", col2.size, "& ", col2.isnull().sum(), " missing values")
+print("Speed values: ", col3.size, "& ", col3.isnull().sum(), " missing values")
+print("Coords_df: ", coords_df.size, "& ", coords_df.isnull().sum(), " missing values")
 
 
+# left turning coordinates x & y
+lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
+lcy = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200))
+
+# replace missing values with the 0
+print("X coordinates: ", lcx.size, "& ", lcx.isnull().sum(), " missing values")
+print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum(), " missing values")
+
+lcy = lcy.fillna(0)
+print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum(), " missing values")
+# drop all zeros
+
+coords_df = pd.concat([lcx, lcy, col2, col3], axis=1)
+coords_df.isnull().sum()
+
+coords_df = coords_df[coords_df.iloc[:, 1] != 0]
+
+
+plt.scatter(coords_df.iloc[:, 0], coords_df.iloc[:, 1], s=0.01)
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
+
+
+left_turn_time = coords_df.iloc[:, 2]
+left_turn_speeds = coords_df.iloc[:, 3]
+print("Line graph: ")
+plt.plot(left_turn_time, left_turn_speeds)
+plt.xlabel("Session t")
+plt.ylabel("Speed")
+plt.show()
+
+
+# missing data
+ax = plt.axes()
+sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
+coords_df.isnull().sum()
+
+# %% find average speeds
+
+# slice a dataset in bins
+set_bins = 100
+coords_quartiles = np.array(coords_df)
+coords_quartiles = np.array_split(coords_quartiles, set_bins)
+
+average_speed_list = []
+for index in range(set_bins):
+    average_speed = np.mean(coords_quartiles[index][:, 3])
+    average_speed_list += [average_speed]
+    #print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
+    index = index+1
+print("Average speed for each bin: \n", average_speed_list, "\n\n")
+
+
+# eucledean distance
+
+bin_distance_list = []
+total_distance = 0
+total_distance_list = []
+for index in range(set_bins):
+    bin_distance = euclidean(coords_quartiles[index][:, 0], coords_quartiles[index][:, 1])
+    bin_distance_list += [bin_distance]
+    total_distance = total_distance + bin_distance_list[index]
+    total_distance_list += [total_distance]
+print("Calculated distance each bin: \n", bin_distance_list)
+print("Total distance: ", total_distance)
+
+
+#ttttt_dist = euclidean(coords_df.iloc[:, 0], coords_df.iloc[:, 1])
+
+# normalize
+total_distance_list = np.array(total_distance_list)
+average_speed_list = np.array(average_speed_list)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(total_distance_list.reshape(-1, 1))
+
+min_max_scaler = preprocessing.MinMaxScaler()
+y_scaled = min_max_scaler.fit_transform(average_speed_list.reshape(-1, 1))
+
+
+# plot
+print("Plot: \n")
+plt.plot(x_scaled, y_scaled)
+plt.xlabel("distance")
+plt.ylabel("Speed")
+plt.show()
+
+
+# %% total distance of left turn
 # get the start time
 st = time.time()
 
 # List where speed values will be stored
-left_speed_list = []
+left_turn_speeds_list = []
 left_turn_distance_list = []
 total_left_turn_distance_list = []
 total_left_turn_distance = 0
@@ -568,19 +600,20 @@ for index, row in coords_df.iloc[:, :1].iterrows():
     y1 = coords_df.iat[index, 1]
     y2 = coords_df.iat[index + 1, 1]
 
-    left_turn_distance = calculate_distance.dist_calc(x1, x2, y1, y2)
-    left_speed = left_turn_distance / (coords_df.iat[index+1, 2]-coords_df.iat[index, 2])
+    left_turn_current_distance = calculate_distance.dist_calc(x1, x2, y1, y2)
+    left_current_speed = left_turn_current_distance / \
+        (coords_df.iat[index+1, 2]-coords_df.iat[index, 2])
 
-    total_left_turn_distance = total_left_turn_distance + left_turn_distance
+    total_left_turn_distance = total_left_turn_distance + left_turn_current_distance
 
     total_left_turn_distance_list += [total_left_turn_distance]
 
-    left_turn_distance_list += [left_turn_distance]
+    left_turn_distance_list += [left_turn_current_distance]
     # print(left_turn_distance_list[index])
-    left_speed_list += [left_speed]
+    left_turn_speeds_list += [left_current_speed]
 
-print(len(left_turn_distance_list))
-print(len(left_speed_list))  # y
+print(len(left_turn_distance_list))  # list with all the distances
+print(len(left_turn_speeds_list))  # list with all the different speeds
 print(total_left_turn_distance)
 
 
@@ -597,10 +630,29 @@ print(total_left_turn_distance)
 # min_max_scaler = preprocessing.MinMaxScaler()
 # x_scaled = min_max_scaler.fit_transform(left_speed_list)
 
-plt.plot(total_left_turn_distance_list, left_speed_list)
+# plt.plot(total_left_turn_distance_list, left_turn_speeds_list)
+# plt.xlabel("distance")
+# plt.ylabel("Speed")
+# plt.show()
+
+
+# %%
+
+plt.plot(np.arange(total_left_turn_distance), average_speed_list)
+plt.xlabel("bins")
+plt.ylabel("avg speeds")
+plt.show()
+# ============
+
+
+# calculate distnace only for left-turn coordinates
+
+
+plt.plot(np.arange(total_left_turn_distance), left_turn_speeds_list)
 plt.xlabel("distance")
 plt.ylabel("Speed")
 plt.show()
+
 
 # total_distance = np.array(total_distance)
 
