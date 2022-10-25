@@ -574,6 +574,28 @@ plt.show()
 
 # %%
 
+# extract the times from beh_data where phase is init to reward true, find the the corresponding coordinates in the
+
+print("Behavioral data file size is: ", beh_data.size, " and type is: ", type(beh_data))
+print("Behavioral data file size is: ",
+      beh_data.iloc[:, 0].size, " and type is: ", type(beh_data.iloc[:, 0]))
+print("Behavioral data file size is: ",
+      beh_data.iloc[:, 4].size, " and type is: ", type(beh_data.iloc[:, 4]))
+print("Behavioral data file size is: ",
+      beh_data.iloc[:, 5].size, " and type is: ", type(beh_data.iloc[:, 5]))
+print("Behavioral data file size is: ",
+      beh_data.iloc[:, 6].size, " and type is: ", type(beh_data.iloc[:, 6]))
+
+# create new dataframe
+init_rew_beh = pd.concat([beh_data.iloc[:, 0], beh_data.iloc[:, 4],
+                         beh_data.iloc[:, 5], beh_data.iloc[:, 6]], axis=1)
+print("Initiation to Reward Behavioral data file size is: ",
+      init_rew_beh.size, " and type is: ", type(init_rew_beh))
+
+# Find one trial
+
+# cast categorical values to numercical, 0 = False, 1 = Incorrect
+
 
 # %% total distance of left turn
 # get the start time
