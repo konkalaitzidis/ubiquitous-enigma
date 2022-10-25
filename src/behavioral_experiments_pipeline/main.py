@@ -42,8 +42,8 @@ beh_data = pd.read_csv(beh_data_path, header=None)
 
 # Adding column names
 beh_data = beh_data.rename(columns={
-    0: 'Time', 1: 'Choice',
-    2: 'Init-Reward', 4: 'Initiation',
+    0: 'Time', 1: 'Trial Number',
+    2: 'Reward', 3: 'Frame Number', 4: 'Initiation',
     5: 'Incorrect', 6: 'Reward', 7: 'CA_Signals'})
 
 
