@@ -42,9 +42,9 @@ beh_data = pd.read_csv(beh_data_path, header=None)
 
 # Adding column names
 beh_data = beh_data.rename(columns={
-    0: 'Time', 1: 'Trial Number',
-    2: 'Reward', 3: 'Frame Number', 4: 'Initiation',
-    5: 'Incorrect', 6: 'Reward', 7: 'CA_Signals'})
+    0: 'Time', 1: 'Trial_Number',
+    2: 'Reward', 3: 'Frame_Number', 4: 'Central_Zone',
+    5: 'L_Zone', 6: 'R_Zone', 7: 'fip_frame'})
 
 
 # Preparing deep lab cut file
@@ -160,25 +160,25 @@ print("Also found MAX SPEED and MINIMUM SPEED")
 
 # %% Gaussian filtering
 
-print("\n\n\n=====> Performed guassian filtering in the speed list. <===== \n\n\n")
+# print("\n\n\n=====> Performed guassian filtering in the speed list. <===== \n\n\n")
 
 
-# Perform guassian filtering in the speed list
-speed_list = np.array(speed_list)
+# # Perform guassian filtering in the speed list
+# speed_list = np.array(speed_list)
 
 
-# Stacking the X and Y coordinates columns vertically
-xy = np.vstack([dlc_data.iloc[:, 18], range(len(dlc_data.iloc[:, 19]))])
+# # Stacking the X and Y coordinates columns vertically
+# xy = np.vstack([dlc_data.iloc[:, 18], range(len(dlc_data.iloc[:, 19]))])
 
 
-# Applying gaussian filtering
-z = gaussian_kde(xy)(xy)
-fig1, ax = plt.subplots(1, 1)
+# # Applying gaussian filtering
+# z = gaussian_kde(xy)(xy)
+# fig1, ax = plt.subplots(1, 1)
 
 
-# Plot
-ax.scatter(dlc_data.iloc[:, 18], dlc_data.iloc[:, 19], c=z, s=1)
-plt.show()
+# # Plot
+# ax.scatter(dlc_data.iloc[:, 18], dlc_data.iloc[:, 19], c=z, s=1)
+# plt.show()
 
 
 # %% Creating quartiles
@@ -237,6 +237,7 @@ plt.xlabel("Session t")
 plt.ylabel("Speed")
 plt.show()
 
+# %%
 # # Normalization
 # x = np.array(speed_df)  # returns a numpy array
 # min_max_scaler = preprocessing.MinMaxScaler()
@@ -297,38 +298,38 @@ plt.show()
 
 
 # find point a
-max_x = max(coords_df.iloc[:, 0])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 0] == max_x:
-        coords_df_y = coords_df.iloc[index, 1]
-print(coords_df_y)
-point_a = (max_x, coords_df_y)
+# max_x = max(coords_df.iloc[:, 0])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 0] == max_x:
+#         coords_df_y = coords_df.iloc[index, 1]
+# print(coords_df_y)
+# point_a = (max_x, coords_df_y)
 
-# find point b
-max_y = max(coords_df.iloc[:, 1])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 1] == max_y:
-        coords_df_x = coords_df.iloc[index, 0]
-print(coords_df_x)
-point_b = (coords_df_x, max_y)
+# # find point b
+# max_y = max(coords_df.iloc[:, 1])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 1] == max_y:
+#         coords_df_x = coords_df.iloc[index, 0]
+# print(coords_df_x)
+# point_b = (coords_df_x, max_y)
 
 
-# distance b/w a and b
-d1 = math.dist(point_a, point_b)
-# display the result
-print(d1)
+# # distance b/w a and b
+# d1 = math.dist(point_a, point_b)
+# # display the result
+# print(d1)
 
-# find point c
-min_x = min(coords_df.iloc[:, 0])
-for index, row in coords_df.iterrows():
-    if coords_df.iloc[index, 0] == min_x:
-        coords_df_y2 = coords_df.iloc[index, 1]
-print(coords_df_y2)
-point_c = (min_x, coords_df_y2)
+# # find point c
+# min_x = min(coords_df.iloc[:, 0])
+# for index, row in coords_df.iterrows():
+#     if coords_df.iloc[index, 0] == min_x:
+#         coords_df_y2 = coords_df.iloc[index, 1]
+# print(coords_df_y2)
+# point_c = (min_x, coords_df_y2)
 
-d2 = math.dist(point_b, point_c)
+# d2 = math.dist(point_b, point_c)
 
-total_dist = d1 + d2
+# total_dist = d1 + d2
 
 
 # for ax, i in zip(axes_list, range(set_quartiles)):
@@ -592,8 +593,23 @@ init_rew_beh = pd.concat([beh_data.iloc[:, 0], beh_data.iloc[:, 4],
 print("Initiation to Reward Behavioral data file size is: ",
       init_rew_beh.size, " and type is: ", type(init_rew_beh))
 
+
+init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
+init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 1
+
+
 # Find one trial
 
+#init_rew_beh[init_rew_beh == True] = 1
+
+# df[df["angiographic_disease"] > 1] = 1
+
+
+reward_trials = init_rew_beh.where(
+    (init_rew_beh.iloc[:, 1] == 'True') | (init_rew_beh.iloc[:, 2] == 'True'))
+
+
+init_rew_beh["Central_Zone"] = init_rew_beh["Central_Zone"].astype("category")
 # cast categorical values to numercical, 0 = False, 1 = Incorrect
 
 
