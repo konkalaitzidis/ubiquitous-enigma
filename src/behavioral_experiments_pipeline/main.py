@@ -537,7 +537,7 @@ for index in range(set_bins):
     average_speed = np.mean(coords_quartiles[index][:, 3])
     average_speed_list += [average_speed]
     #print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
-    index = index+1
+    index += 1
 print("Average speed for each bin: \n", average_speed_list, "\n\n")
 
 
@@ -604,6 +604,31 @@ init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 1
 
 # df[df["angiographic_disease"] > 1] = 1
 
+
+count = 0
+reward_time_list = []
+for index, row in init_rew_beh.iterrows():
+    if init_rew_beh.iloc[index, 1] == 1:
+        reward_time = init_rew_beh[index, 0]
+        reward_time_list += reward_time
+    elif init_rew_beh.iloc[index, 2] == 1:
+        reward_time = init_rew_beh[index, 0]
+        reward_time_list += reward_time
+    else:
+        index += 1
+
+
+# for index, row in dlc_data.iterrows():
+
+#     # control if to exit the function
+#     if dlc_data.iat[index, 24] == dlc_data.iat[-1, 24]:
+#         print("All speed values have been stored in list successfully.")
+#         break
+
+#     x1 = dlc_data.iat[index, 18]
+#     x2 = dlc_data.iat[index+1, 18]
+#     y1 = dlc_data.iat[index, 19]
+#     y2 = dlc_data.iat[index + 1, 19]
 
 reward_trials = init_rew_beh.where(
     (init_rew_beh.iloc[:, 1] == 'True') | (init_rew_beh.iloc[:, 2] == 'True'))
