@@ -617,6 +617,8 @@ for index, row in init_rew_beh.iterrows():
     else:
         index += 1
 
+final_reward_time = reward_time_list[-1] - reward_time_list[0]
+
 
 # for index, row in dlc_data.iterrows():
 
