@@ -581,6 +581,10 @@ print("Behavioral data file size is: ", beh_data.size, " and type is: ", type(be
 print("Behavioral data file size is: ",
       beh_data.iloc[:, 0].size, " and type is: ", type(beh_data.iloc[:, 0]))
 print("Behavioral data file size is: ",
+      beh_data.iloc[:, 1].size, " and type is: ", type(beh_data.iloc[:, 1]))
+print("Behavioral data file size is: ",
+      beh_data.iloc[:, 2].size, " and type is: ", type(beh_data.iloc[:, 2]))
+print("Behavioral data file size is: ",
       beh_data.iloc[:, 4].size, " and type is: ", type(beh_data.iloc[:, 4]))
 print("Behavioral data file size is: ",
       beh_data.iloc[:, 5].size, " and type is: ", type(beh_data.iloc[:, 5]))
@@ -588,7 +592,7 @@ print("Behavioral data file size is: ",
       beh_data.iloc[:, 6].size, " and type is: ", type(beh_data.iloc[:, 6]))
 
 # create new dataframe
-init_rew_beh = pd.concat([beh_data.iloc[:, 0], beh_data.iloc[:, 4],
+init_rew_beh = pd.concat([beh_data.iloc[:, 0], beh_data.iloc[:, 1], beh_data.iloc[:, 2], beh_data.iloc[:, 4],
                          beh_data.iloc[:, 5], beh_data.iloc[:, 6]], axis=1)
 print("Initiation to Reward Behavioral data file size is: ",
       init_rew_beh.size, " and type is: ", type(init_rew_beh))
@@ -605,17 +609,167 @@ init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 1
 # df[df["angiographic_disease"] > 1] = 1
 
 
-count = 0
+# function
+# def find_start_end(start_time, time_index, end_time):
+
+
+init_counter = 0
+lz_counter = 0
 reward_time_list = []
+trial_list = []
+
+trial = init_rew_beh.iloc[index, 1]
+trial_list += [trial]
+init_reward_time_list = []
+lz_reward_time_list = []
+end_time = 0
+reward_list = []
+
 for index, row in init_rew_beh.iterrows():
-    if init_rew_beh.iloc[index, 1] == 1:
-        reward_time = init_rew_beh[index, 0]
-        reward_time_list += reward_time
-    elif init_rew_beh.iloc[index, 2] == 1:
-        reward_time = init_rew_beh[index, 0]
-        reward_time_list += reward_time
+
+    if init_rew_beh.iloc[index, 3] == 1:
+
+        # find_start_end(t0, index, end_time)
+        reward = init_rew_beh.iloc[index, 2]
+        reward_list += [reward]
+
+        init_reward_time = init_rew_beh.iloc[index, 0]
+        init_reward_time_list += [init_reward_time]
+        init_counter += 1
+
+        # reward_time = init_rew_beh.iloc[index, 0]
+        # reward_time_list += [reward_time]
+    elif init_rew_beh.iloc[index, 4] == 1:
+
+        # find_start_end(tN, index, end_time)
+
+        reward = init_rew_beh.iloc[index, 2]
+        reward_list += [reward]
+
+        lz_reward_time = init_rew_beh.iloc[index, 0]
+        lz_reward_time_list += [lz_reward_time]
+
+        lz_counter += 1
     else:
         index += 1
+
+x = np.array(reward_list)
+print(np.unique(x))
+
+
+unique, counts = np.unique(reward_list, return_counts=True)
+
+result = np.column_stack((unique, counts))
+print(result)
+
+
+start_time = init_reward_time_list[0]
+end_time = lz_reward_time_list[-1]
+
+print("Start time is ", start_time, "and end time is ", end_time)
+
+
+# a = pd.Series(np.fill(np.nan, len(df)))
+# a[df.c_zone] = 1.0
+# a[df.left_arm] = 2.0
+# a[df.left_arm.diff()==1] = 0.0
+# a = a.ffill()
+
+
+# %% Extract one correct trial
+
+
+correct_trial_Cz = init_rew_beh.where(init_rew_beh.iloc[:, 1] == 6).dropna()
+correct_trial_Lz = init_rew_beh.where(
+    (init_rew_beh.iloc[:, 1] == 7) & (init_rew_beh.iloc[:, 4] == 1)).dropna()
+frames = [correct_trial_Cz, correct_trial_Lz]
+correct_trial = pd.concat(frames)
+
+extract_time = correct_trial.iloc[-1, 0] - correct_trial.iloc[0, 0]
+print("Start time is ", correct_trial.iloc[0, 0], " and end time is ",
+      correct_trial.iloc[-1, 0], "and the difference is ", extract_time)
+
+
+correct_trial_dlc = dlc_data.where(
+    (dlc_data.iloc[:, 24] > 261.55) & (dlc_data.iloc[:, 24] < 360.87)).dropna()
+
+# %% plot
+
+
+# Find and plot only left turn coordinates
+
+col0 = correct_trial_dlc.iloc[:-1, 18]  # x coordinates
+col1 = correct_trial_dlc.iloc[:-1, 19]  # y coordinates
+col2 = correct_trial_dlc.iloc[:-1, 25]  # time
+col3 = speed_df.iloc[:-1, 0]  # speed values
+coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
+# rename column names
+# coords_df = coords_df.rename(columns={
+#     0: 'x', 1: 'y'})
+
+print("X coordinates: ", col0.size, "& ", col0.isnull().sum(), " missing values")
+print("Y coordinates: ", col1.size, "& ", col1.isnull().sum(), " missing values")
+print("Time: ", col2.size, "& ", col2.isnull().sum(), " missing values")
+print("Speed values: ", col3.size, "& ", col3.isnull().sum(), " missing values")
+print("Coords_df: ", coords_df.size, "& ", coords_df.isnull().sum(), " missing values")
+
+
+# left turning coordinates x & y
+lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
+lcy = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200))
+
+# replace missing values with the 0
+print("X coordinates: ", lcx.size, "& ", lcx.isnull().sum(), " missing values")
+print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum(), " missing values")
+
+lcy = lcy.fillna(0)
+print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum(), " missing values")
+# drop all zeros
+
+coords_df = pd.concat([lcx, lcy, col2, col3], axis=1)
+coords_df.isnull().sum()
+
+coords_df = coords_df[coords_df.iloc[:, 1] != 0]
+
+
+plt.scatter(coords_df.iloc[:, 0], coords_df.iloc[:, 1], s=0.01)
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
+
+
+left_turn_time = coords_df.iloc[:, 2]
+left_turn_speeds = coords_df.iloc[:, 3]
+print("Line graph: ")
+plt.plot(left_turn_time, left_turn_speeds)
+plt.xlabel("Session t")
+plt.ylabel("Speed")
+plt.show()
+
+
+# missing data
+ax = plt.axes()
+sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
+coords_df.isnull().sum()
+
+
+# %%
+
+
+# for index, row in init_rew_beh.iterrows():
+#     if init_rew_beh.iloc[index, 2] == 1:
+
+
+#         reward_time = init_rew_beh.iloc[index, 0]
+#         reward_time_list += [reward_time]
+#     elif init_rew_beh.iloc[index, 3] == 1:
+
+
+#         reward_time = init_rew_beh.iloc[index, 0]
+#         reward_time_list += [reward_time]
+#     else:
+#         index += 1
+
 
 final_reward_time = reward_time_list[-1] - reward_time_list[0]
 
