@@ -601,6 +601,7 @@ print("Initiation to Reward Behavioral data file size is: ",
 init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
 init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 1
 
+# %%
 
 # Find one trial
 
@@ -700,7 +701,7 @@ correct_trial_dlc = dlc_data.where(
 
 col0 = correct_trial_dlc.iloc[:-1, 18]  # x coordinates
 col1 = correct_trial_dlc.iloc[:-1, 19]  # y coordinates
-col2 = correct_trial_dlc.iloc[:-1, 25]  # time
+col2 = correct_trial_dlc.iloc[:-1, 24]  # time
 col3 = speed_df.iloc[:-1, 0]  # speed values
 coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
 # rename column names
@@ -751,6 +752,54 @@ plt.show()
 ax = plt.axes()
 sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
 coords_df.isnull().sum()
+
+
+# %%
+
+# slice a dataset in bins
+set_bins = 100
+coords_quartiles = np.array(coords_df)
+coords_quartiles = np.array_split(coords_quartiles, set_bins)
+
+average_speed_list = []
+for index in range(set_bins):
+    average_speed = np.mean(coords_quartiles[index][:, 3])
+    average_speed_list += [average_speed]
+    #print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
+    index += 1
+print("Average speed for each bin: \n", average_speed_list, "\n\n")
+
+
+# eucledean distance
+bin_distance_list = []
+total_distance = 0
+total_distance_list = []
+for index in range(set_bins):
+    bin_distance = euclidean(coords_quartiles[index][:, 0], coords_quartiles[index][:, 1])
+    bin_distance_list += [bin_distance]
+    total_distance = total_distance + bin_distance_list[index]
+    total_distance_list += [total_distance]
+print("Calculated distance each bin: \n", bin_distance_list)
+print("Total distance: ", total_distance)
+
+
+# normalize
+total_distance_list = np.array(total_distance_list)
+average_speed_list = np.array(average_speed_list)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(total_distance_list.reshape(-1, 1))
+
+min_max_scaler = preprocessing.MinMaxScaler()
+y_scaled = min_max_scaler.fit_transform(average_speed_list.reshape(-1, 1))
+
+
+# plot
+print("Plot: \n")
+plt.plot(x_scaled, y_scaled)
+plt.xlabel("distance")
+plt.ylabel("Speed")
+plt.show()
 
 
 # %%
