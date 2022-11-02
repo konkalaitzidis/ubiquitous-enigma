@@ -677,6 +677,15 @@ print("Start time is ", start_time, "and end time is ", end_time)
 # a = a.ffill()
 
 
+# %%
+
+
+init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
+init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == False] = 2
+init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == False] = 2
+init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 3
+
+
 # %% Extract one correct trial
 
 
@@ -757,7 +766,7 @@ coords_df.isnull().sum()
 # %%
 
 # slice a dataset in bins
-set_bins = 100
+set_bins = 250
 coords_quartiles = np.array(coords_df)
 coords_quartiles = np.array_split(coords_quartiles, set_bins)
 
@@ -800,6 +809,10 @@ plt.plot(x_scaled, y_scaled)
 plt.xlabel("distance")
 plt.ylabel("Speed")
 plt.show()
+
+# con = np.concatenate((x_scaled, y_scaled), axis=1)
+
+# %%
 
 
 # %%
