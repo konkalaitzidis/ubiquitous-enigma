@@ -459,13 +459,13 @@ plt.show()
 # %% Find the linear and angualr velocity of the animal when it turns left during init -> reward trial
 
 
-'''A kernel density estimate (KDE) plot is a method for visualizing the distribution of observations in a dataset, analogous to a histogram. KDE represents the data using a continuous probability density curve in one or more dimensions.'''
-sns.kdeplot(x=lcx, y=lcy.where(lcy > 0))
+# '''A kernel density estimate (KDE) plot is a method for visualizing the distribution of observations in a dataset, analogous to a histogram. KDE represents the data using a continuous probability density curve in one or more dimensions.'''
+# sns.kdeplot(x=lcx, y=lcy.where(lcy > 0))
 
-# missing data
-ax = plt.axes()
-sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
-coords_df.isnull().sum()
+# # missing data
+# ax = plt.axes()
+# sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
+# coords_df.isnull().sum()
 
 
 # %% create data
@@ -536,7 +536,7 @@ average_speed_list = []
 for index in range(set_bins):
     average_speed = np.mean(coords_quartiles[index][:, 3])
     average_speed_list += [average_speed]
-    #print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
+    # print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
     index += 1
 print("Average speed for each bin: \n", average_speed_list, "\n\n")
 
@@ -605,7 +605,7 @@ init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 1
 
 # Find one trial
 
-#init_rew_beh[init_rew_beh == True] = 1
+# init_rew_beh[init_rew_beh == True] = 1
 
 # df[df["angiographic_disease"] > 1] = 1
 
@@ -657,7 +657,7 @@ for index, row in init_rew_beh.iterrows():
 x = np.array(reward_list)
 print(np.unique(x))
 
-
+glas
 unique, counts = np.unique(reward_list, return_counts=True)
 
 result = np.column_stack((unique, counts))
@@ -677,13 +677,95 @@ print("Start time is ", start_time, "and end time is ", end_time)
 # a = a.ffill()
 
 
-# %%
+# %% function
+
+
+# %% merging truth values from other columns to central zone
 
 
 init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
 init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == False] = 2
 init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == False] = 2
 init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 3
+
+# %%
+
+# drop Rz
+init_rew_beh.drop('R_Zone', inplace=True, axis=1)
+
+
+# replace the 2 values in C_zone with 3 if L_Zone is 3
+init_rew_beh["Central_Zone"][init_rew_beh["L_Zone"] == 3] = 3
+
+
+# %%
+
+trial_list = []
+
+
+def start_and_end_time_of_trial(start_time, end_time, trial_number):
+    correct_trial_DF = pd.DataFrame([], columns=['Trial Number', 'Start time', 'End time'])
+    s_t = start_time
+    e_t = end_time
+    t_n = trial_number
+    correct_trial_DF = correct_trial_DF.append(
+        {'Trial Number': t_n, 'Start time': s_t, 'End time': e_t}, ignore_index=True)
+    return correct_trial_DF
+
+
+# take the time values from cz 1 -> 3
+trial_DF = pd.DataFrame([], columns=['Timestamps', 'Value'])
+end_time = 0
+start_time = -1
+correct_sequence = False
+trial_number = 0
+Cz2 = False
+Cz3 = False
+dataframe_collection = {}
+
+for index, row, in init_rew_beh.iterrows():  # for every row in df
+
+    # if value of column Central Zone is 1 (True)
+    if init_rew_beh.iloc[index, 3] == 1 and Cz2 == False:
+
+        if start_time == -1:  # if start_time hasnt been found
+            start_time = init_rew_beh.iloc[index, 0]  # start time is the time in index row
+
+        # either way add the index row in a new df
+        trial_DF = trial_DF.append(
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
+        correct_sequence = True
+
+        # start_and_end_time_of_trial(start_time, end_time, trial_DF) # send start and end time in function
+
+        # if init_rew_beh.iloc[index + 1, 3] == 2:
+        #     trial_DF = trial_DF.append(
+        #         {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
+        #     correct_sequence = True
+
+    elif init_rew_beh.iloc[index, 3] == 2 and correct_sequence == True and Cz3 == False:
+        trial_DF = trial_DF.append(
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
+        # correct_sequence = True
+        Cz2 = True
+
+    elif init_rew_beh.iloc[index, 3] == 3 and correct_sequence == True:
+        trial_DF = trial_DF.append(
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
+        # correct_sequence = True
+
+        if init_rew_beh.iloc[index + 1, 3] == 2:
+            correct_sequence = False
+            trial_number += 1
+            # trial_DF = trial_DF.append(
+            #     {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
+            end_time = init_rew_beh.iloc[index, 0]
+            start_and_end_time_of_trial(start_time, end_time, trial_number)
+            print("End of trial number: ", trial_number)
+
+
+# DF= pd.DataFrame({'chr': ["chr3", "chr3", "chr7", "chr6", "chr1"], 'pos': [10, 20, 30, 40, 50], })
+# ans= [y for x, y in DF.groupby('chr')]
 
 
 # %% Extract one correct trial
@@ -774,7 +856,7 @@ average_speed_list = []
 for index in range(set_bins):
     average_speed = np.mean(coords_quartiles[index][:, 3])
     average_speed_list += [average_speed]
-    #print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
+    # print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
     index += 1
 print("Average speed for each bin: \n", average_speed_list, "\n\n")
 
