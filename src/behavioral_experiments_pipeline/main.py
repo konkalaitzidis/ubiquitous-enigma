@@ -763,7 +763,6 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
             start_and_end_time_of_trial(start_time, end_time, trial_number)
             print("End of trial number: ", trial_number)
 
-
 # DF= pd.DataFrame({'chr': ["chr3", "chr3", "chr7", "chr6", "chr1"], 'pos': [10, 20, 30, 40, 50], })
 # ans= [y for x, y in DF.groupby('chr')]
 
