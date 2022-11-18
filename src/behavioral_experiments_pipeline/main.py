@@ -12,6 +12,7 @@ Pipeline to analyze behavioral, tracking, and calcium imagery data.
 """
 # %% Importing Packages and Libraries
 
+from time import sleep
 from scipy.spatial.distance import euclidean
 import scipy.interpolate as interp
 import time
@@ -657,7 +658,6 @@ for index, row in init_rew_beh.iterrows():
 x = np.array(reward_list)
 print(np.unique(x))
 
-glas
 unique, counts = np.unique(reward_list, return_counts=True)
 
 result = np.column_stack((unique, counts))
@@ -705,7 +705,7 @@ def start_and_end_time_of_trial(start_time, end_time, trial_number):
     correct_trial_DF = pd.DataFrame([], columns=['Trial Number', 'Start time', 'End time'])
     correct_trial_DF = correct_trial_DF.append(
         {'Trial Number': trial_number, 'Start time': start_time, 'End time': end_time}, ignore_index=True)
-    # return correct_trial_DF
+    return correct_trial_DF
 
 
 # take the time values from cz 1 -> 3
@@ -717,6 +717,7 @@ trial_number = 0
 Cz2 = False
 Cz3 = False
 dataframe_collection = {}
+trial_list = []
 
 
 for index, row, in init_rew_beh.iterrows():  # for every row in df
@@ -753,14 +754,16 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
         if init_rew_beh.iloc[index + 1, 3] == 2:
             correct_sequence = False
             trial_number += 1
-            # trial_DF = trial_DF.append(
-            #     {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
             end_time = init_rew_beh.iloc[index, 0]
-            start_and_end_time_of_trial(start_time, end_time, trial_number)
-            break
+            correct_trials = start_and_end_time_of_trial(start_time, end_time, trial_number)
+            print("Correct_trials\n", correct_trials)
+            sleep(2)
+            trial_list += [correct_trials]
+            # reset variables
+            Cz2 = False
+            start_time = -1
 
-
-#print("Correct_trials\n", correct_trials)
+print("Correct trials", iter(correct_trials))
 
 
 # DF= pd.DataFrame({'chr': ["chr3", "chr3", "chr7", "chr6", "chr1"], 'pos': [10, 20, 30, 40, 50], })
