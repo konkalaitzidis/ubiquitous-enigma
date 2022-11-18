@@ -700,17 +700,12 @@ init_rew_beh["Central_Zone"][init_rew_beh["L_Zone"] == 3] = 3
 
 # %%
 
-trial_list = []
-
 
 def start_and_end_time_of_trial(start_time, end_time, trial_number):
     correct_trial_DF = pd.DataFrame([], columns=['Trial Number', 'Start time', 'End time'])
-    s_t = start_time
-    e_t = end_time
-    t_n = trial_number
     correct_trial_DF = correct_trial_DF.append(
-        {'Trial Number': t_n, 'Start time': s_t, 'End time': e_t}, ignore_index=True)
-    return correct_trial_DF
+        {'Trial Number': trial_number, 'Start time': start_time, 'End time': end_time}, ignore_index=True)
+    # return correct_trial_DF
 
 
 # take the time values from cz 1 -> 3
@@ -722,6 +717,7 @@ trial_number = 0
 Cz2 = False
 Cz3 = False
 dataframe_collection = {}
+
 
 for index, row, in init_rew_beh.iterrows():  # for every row in df
 
@@ -761,7 +757,11 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
             #     {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
             end_time = init_rew_beh.iloc[index, 0]
             start_and_end_time_of_trial(start_time, end_time, trial_number)
-            print("End of trial number: ", trial_number)
+            break
+
+
+#print("Correct_trials\n", correct_trials)
+
 
 # DF= pd.DataFrame({'chr': ["chr3", "chr3", "chr7", "chr6", "chr1"], 'pos': [10, 20, 30, 40, 50], })
 # ans= [y for x, y in DF.groupby('chr')]
