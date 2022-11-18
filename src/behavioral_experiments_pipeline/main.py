@@ -763,7 +763,7 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
             Cz2 = False
             start_time = -1
 
-print("Correct trials", iter(correct_trials))
+print("Correct trials", trial_list)
 
 
 # DF= pd.DataFrame({'chr': ["chr3", "chr3", "chr7", "chr6", "chr1"], 'pos': [10, 20, 30, 40, 50], })
