@@ -12,6 +12,7 @@ Pipeline to analyze behavioral, tracking, and calcium imagery data.
 """
 # %% Importing Packages and Libraries
 
+import warnings
 from time import sleep
 from scipy.spatial.distance import euclidean
 import scipy.interpolate as interp
@@ -698,7 +699,9 @@ init_rew_beh.drop('R_Zone', inplace=True, axis=1)
 init_rew_beh["Central_Zone"][init_rew_beh["L_Zone"] == 3] = 3
 
 
-# %%
+# %% extract all correct left-turn trials
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def start_and_end_time_of_trial(start_time, end_time, trial_number):
@@ -756,18 +759,24 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
             trial_number += 1
             end_time = init_rew_beh.iloc[index, 0]
             correct_trials = start_and_end_time_of_trial(start_time, end_time, trial_number)
-            print("Correct_trials\n", correct_trials)
+            # print("Correct_trials\n", correct_trials)
             sleep(2)
             trial_list += [correct_trials]
             # reset variables
             Cz2 = False
             start_time = -1
+            Cz3 = True
 
-print("Correct trials", trial_list)
+print(trial_list)
 
 
 # DF= pd.DataFrame({'chr': ["chr3", "chr3", "chr7", "chr6", "chr1"], 'pos': [10, 20, 30, 40, 50], })
 # ans= [y for x, y in DF.groupby('chr')]
+
+# %% extract time range from dlc
+
+# correct_trial_dlc = dlc_data.where(
+#     ((dlc_data.iloc[:, 24] > 41.275456) & (dlc_data.iloc[:, 24] < 92.847808)) & ((dlc_data.iloc[:, 24] > 210.618432) & (dlc_data.iloc[:, 24] < 325.368512)) & ((dlc_data.iloc[:, 24] > 369.276992) & (dlc_data.iloc[:, 24] < 487.094144)) & ((dlc_data.iloc[:, 24] > 568.859405) & (dlc_data.iloc[:, 24] < 787.692006)) & ((dlc_data.iloc[:, 24] > 890.07648) & (dlc_data.iloc[:, 24] < 1081.788915))).dropna()
 
 
 # %% Extract one correct trial
