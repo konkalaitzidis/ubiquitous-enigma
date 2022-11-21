@@ -353,75 +353,75 @@ plt.show()
     bin_5 = Reward '''
 
 
-# bin_1 | Initiation
-init_x = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] > 500)
-init_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 300) & (coords_df.iloc[:, 1] > 0))
-# init_df = pd.concat([init_x, init_y], axis=1)
+# # bin_1 | Initiation
+# init_x = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] > 500)
+# init_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 300) & (coords_df.iloc[:, 1] > 0))
+# # init_df = pd.concat([init_x, init_y], axis=1)
 
-# min_max_scaler = preprocessing.MinMaxScaler()
-# x_scaled = min_max_scaler.fit_transform(init_x)
+# # min_max_scaler = preprocessing.MinMaxScaler()
+# # x_scaled = min_max_scaler.fit_transform(init_x)
 
-# min_max_scaler = preprocessing.MinMaxScaler()
-# x_scaled = min_max_scaler.fit_transform(init_y)
+# # min_max_scaler = preprocessing.MinMaxScaler()
+# # x_scaled = min_max_scaler.fit_transform(init_y)
 
-plt.scatter(init_x, init_y, s=5, c='#800000')
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.show()
-
-
-# bin_2 | Initiation -> Choice
-init_ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 280) & (coords_df.iloc[:, 0] < 500))
-init_ch_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 300))
-# init_ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
-
-# min_max_scaler = preprocessing.MinMaxScaler()
-# x_scaled = min_max_scaler.fit_transform(init_ch_df)
-
-plt.scatter(init_ch_x, init_ch_y, s=5, c='#8B0000')
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.show()
+# plt.scatter(init_x, init_y, s=5, c='#800000')
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.show()
 
 
-# bin_3 | Choice
-ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 150) & (coords_df.iloc[:, 0] < 280))
-ch_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] > 600)
-# ch_df = pd.concat([ch_x, ch_y], axis=1)
+# # bin_2 | Initiation -> Choice
+# init_ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 280) & (coords_df.iloc[:, 0] < 500))
+# init_ch_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 300))
+# # init_ch_df = pd.concat([init_ch_x, init_ch_y], axis=1)
 
-# min_max_scaler = preprocessing.MinMaxScaler()
-# x_scaled = min_max_scaler.fit_transform(ch_df)
+# # min_max_scaler = preprocessing.MinMaxScaler()
+# # x_scaled = min_max_scaler.fit_transform(init_ch_df)
 
-plt.scatter(ch_x, ch_y, s=5, c='#B22222')
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.show()
-
-
-# bin_4 | Choice -> Reward
-ch_rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
-ch_rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 350))
-# ch_rew_df = pd.concat([ch_rew_x, ch_rew_y], axis=1)
-
-# min_max_scaler = preprocessing.MinMaxScaler()
-# x_scaled = min_max_scaler.fit_transform(ch_rew_df)
-
-plt.scatter(ch_rew_x, ch_rew_y, s=5, c='#DC143C')
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.show()
+# plt.scatter(init_ch_x, init_ch_y, s=5, c='#8B0000')
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.show()
 
 
-# bin_5 | Reward
-rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
-rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 350) & (coords_df.iloc[:, 1] > 240))
-# rew_df = pd.concat([rew_x, rew_y], axis=1)
+# # bin_3 | Choice
+# ch_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 150) & (coords_df.iloc[:, 0] < 280))
+# ch_y = coords_df.iloc[:, 1].where(coords_df.iloc[:, 1] > 600)
+# # ch_df = pd.concat([ch_x, ch_y], axis=1)
+
+# # min_max_scaler = preprocessing.MinMaxScaler()
+# # x_scaled = min_max_scaler.fit_transform(ch_df)
+
+# plt.scatter(ch_x, ch_y, s=5, c='#B22222')
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.show()
 
 
-plt.scatter(rew_x, rew_y, s=5, c='#FF0000')
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.show()
+# # bin_4 | Choice -> Reward
+# ch_rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
+# ch_rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 600) & (coords_df.iloc[:, 1] > 350))
+# # ch_rew_df = pd.concat([ch_rew_x, ch_rew_y], axis=1)
+
+# # min_max_scaler = preprocessing.MinMaxScaler()
+# # x_scaled = min_max_scaler.fit_transform(ch_rew_df)
+
+# plt.scatter(ch_rew_x, ch_rew_y, s=5, c='#DC143C')
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.show()
+
+
+# # bin_5 | Reward
+# rew_x = coords_df.iloc[:, 0].where((coords_df.iloc[:, 0] > 130) & (coords_df.iloc[:, 0] < 240))
+# rew_y = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 350) & (coords_df.iloc[:, 1] > 240))
+# # rew_df = pd.concat([rew_x, rew_y], axis=1)
+
+
+# plt.scatter(rew_x, rew_y, s=5, c='#FF0000')
+# plt.xlabel("X")
+# plt.ylabel("Y")
+# plt.show()
 
 
 # plotRows = 3
@@ -478,9 +478,7 @@ col1 = dlc_data.iloc[:-1, 19]  # y coordinates
 col2 = dlc_data.iloc[:-1, 24]  # time
 col3 = speed_df.iloc[:-1, 0]  # speed values
 coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
-# rename column names
-# coords_df = coords_df.rename(columns={
-#     0: 'x', 1: 'y'})
+
 
 print("X coordinates: ", col0.size, "& ", col0.isnull().sum(), " missing values")
 print("Y coordinates: ", col1.size, "& ", col1.isnull().sum(), " missing values")
@@ -604,16 +602,6 @@ init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
 init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 1
 
 # %%
-
-# Find one trial
-
-# init_rew_beh[init_rew_beh == True] = 1
-
-# df[df["angiographic_disease"] > 1] = 1
-
-
-# function
-# def find_start_end(start_time, time_index, end_time):
 
 
 init_counter = 0
@@ -774,6 +762,7 @@ print(trial_list)
 # ans= [y for x, y in DF.groupby('chr')]
 
 # %% extract time range from dlc
+
 
 # correct_trial_dlc = dlc_data.where(
 #     ((dlc_data.iloc[:, 24] > 41.275456) & (dlc_data.iloc[:, 24] < 92.847808)) & ((dlc_data.iloc[:, 24] > 210.618432) & (dlc_data.iloc[:, 24] < 325.368512)) & ((dlc_data.iloc[:, 24] > 369.276992) & (dlc_data.iloc[:, 24] < 487.094144)) & ((dlc_data.iloc[:, 24] > 568.859405) & (dlc_data.iloc[:, 24] < 787.692006)) & ((dlc_data.iloc[:, 24] > 890.07648) & (dlc_data.iloc[:, 24] < 1081.788915))).dropna()
