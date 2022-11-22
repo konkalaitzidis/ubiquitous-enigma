@@ -709,7 +709,6 @@ correct_sequence = False
 trial_number = 0
 Cz2 = False
 Cz3 = False
-dataframe_collection = {}
 trial_list = []
 start_frame = 0
 end_frame = 0
@@ -747,7 +746,7 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
             end_time = init_rew_beh.iloc[index, 0]
 
             correct_trial_DF = correct_trial_DF.append(
-                {'Trial Number': trial_number, 'Start time': start_time, 'End time': end_time, 'Start Frame': start_frame, 'End Frame': end_frame}, ignore_index=True)
+                {'Trial Number': trial_number, 'Start Frame': start_frame, 'End Frame': end_frame, 'Start time': start_time, 'End time': end_time}, ignore_index=True)
 
             # correct_trials = start_and_end_time_of_trial(correct_trial_DF,
             #     start_time, end_time, trial_number, start_frame, end_frame)
@@ -760,6 +759,7 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
             start_time = -1
             Cz3 = True
 
+correct_trial_DF = correct_trial_DF.iloc[:, 0:3].astype(int)
 print(correct_trial_DF)
 
 
@@ -768,12 +768,23 @@ print(correct_trial_DF)
 
 # %% extract frame numbers from dlc
 
-distinct_frames =
 
-coorect_trial_dlc = dlc_data.where(dlc_data)
+trial_count = 0
+all_trials = []
 
-# correct_trial_dlc = dlc_data.where(
-#     ((dlc_data.iloc[:, 24] > 41.275456) & (dlc_data.iloc[:, 24] < 92.847808)) & ((dlc_data.iloc[:, 24] > 210.618432) & (dlc_data.iloc[:, 24] < 325.368512)) & ((dlc_data.iloc[:, 24] > 369.276992) & (dlc_data.iloc[:, 24] < 487.094144)) & ((dlc_data.iloc[:, 24] > 568.859405) & (dlc_data.iloc[:, 24] < 787.692006)) & ((dlc_data.iloc[:, 24] > 890.07648) & (dlc_data.iloc[:, 24] < 1081.788915))).dropna()
+for index, row in dlc_data.iterrows():
+    if dlc_data.iloc[index, index] >= correct_trial_DF.iloc[trial_count, 1] and dlc_data.iloc[index, index] <= correct_trial_DF.iloc[trial_count, 2]:
+        all_trials += [dlc_data.iloc[index, :]]
+    trial_count += 1
+
+
+# for index, row in correct_trial_DF.iterrows():
+#     correct_trial_dlc = dlc_data.where((dlc_data.index >= correct_trial_DF.iloc[0, 1]) & (
+#         dlc_data.index <= correct_trial_DF.iloc[0, 2]))
+
+
+correct_trial_dlc = dlc_data.where(
+    ((dlc_data.iloc[:, 24] > 41.275456) & (dlc_data.iloc[:, 24] < 92.847808)) & ((dlc_data.iloc[:, 24] > 210.618432) & (dlc_data.iloc[:, 24] < 325.368512)) & ((dlc_data.iloc[:, 24] > 369.276992) & (dlc_data.iloc[:, 24] < 487.094144)) & ((dlc_data.iloc[:, 24] > 568.859405) & (dlc_data.iloc[:, 24] < 787.692006)) & ((dlc_data.iloc[:, 24] > 890.07648) & (dlc_data.iloc[:, 24] < 1081.788915))).dropna()
 
 
 # %% Extract one correct trial
@@ -796,7 +807,7 @@ correct_trial_dlc = dlc_data.where(
 # %% plot
 
 
-# Find and plot only left turn coordinates
+# Find and plot only left turn coordinates for correct trials
 
 col0 = correct_trial_dlc.iloc[:-1, 18]  # x coordinates
 col1 = correct_trial_dlc.iloc[:-1, 19]  # y coordinates
