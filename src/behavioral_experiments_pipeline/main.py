@@ -770,48 +770,48 @@ print(correct_trial_DF)
 
 
 trial_count = 0
-all_trials = []
+new_dlc_data = pd.DataFrame()
 
-for index, row in dlc_data.iterrows():
-    if dlc_data.iloc[index, index] >= correct_trial_DF.iloc[trial_count, 1] and dlc_data.iloc[index, index] <= correct_trial_DF.iloc[trial_count, 2]:
-        all_trials += [dlc_data.iloc[index, :]]
+dlc_data['index_col'] = dlc_data.index
+
+for index, row in correct_trial_DF.iterrows():
+
+    for index, row in dlc_data.iterrows():
+        if dlc_data.iloc[index, 25] >= correct_trial_DF.iloc[trial_count, 1] and dlc_data.iloc[index, 25] <= correct_trial_DF.iloc[trial_count, 2]:
+            new_dlc_data = new_dlc_data.append(dlc_data.iloc[index, :])
+        #trial_count += 1
     trial_count += 1
 
 
-# for index, row in correct_trial_DF.iterrows():
-#     correct_trial_dlc = dlc_data.where((dlc_data.index >= correct_trial_DF.iloc[0, 1]) & (
-#         dlc_data.index <= correct_trial_DF.iloc[0, 2]))
-
-
-correct_trial_dlc = dlc_data.where(
-    ((dlc_data.iloc[:, 24] > 41.275456) & (dlc_data.iloc[:, 24] < 92.847808)) & ((dlc_data.iloc[:, 24] > 210.618432) & (dlc_data.iloc[:, 24] < 325.368512)) & ((dlc_data.iloc[:, 24] > 369.276992) & (dlc_data.iloc[:, 24] < 487.094144)) & ((dlc_data.iloc[:, 24] > 568.859405) & (dlc_data.iloc[:, 24] < 787.692006)) & ((dlc_data.iloc[:, 24] > 890.07648) & (dlc_data.iloc[:, 24] < 1081.788915))).dropna()
+# correct_trial_dlc = dlc_data.where(
+#     ((dlc_data.iloc[:, 24] > 41.275456) & (dlc_data.iloc[:, 24] < 92.847808)) & ((dlc_data.iloc[:, 24] > 210.618432) & (dlc_data.iloc[:, 24] < 325.368512)) & ((dlc_data.iloc[:, 24] > 369.276992) & (dlc_data.iloc[:, 24] < 487.094144)) & ((dlc_data.iloc[:, 24] > 568.859405) & (dlc_data.iloc[:, 24] < 787.692006)) & ((dlc_data.iloc[:, 24] > 890.07648) & (dlc_data.iloc[:, 24] < 1081.788915))).dropna()
 
 
 # %% Extract one correct trial
 
 
-correct_trial_Cz = init_rew_beh.where(init_rew_beh.iloc[:, 1] == 6).dropna()
-correct_trial_Lz = init_rew_beh.where(
-    (init_rew_beh.iloc[:, 1] == 7) & (init_rew_beh.iloc[:, 4] == 1)).dropna()
-frames = [correct_trial_Cz, correct_trial_Lz]
-correct_trial = pd.concat(frames)
+# correct_trial_Cz = init_rew_beh.where(init_rew_beh.iloc[:, 1] == 6).dropna()
+# correct_trial_Lz = init_rew_beh.where(
+#     (init_rew_beh.iloc[:, 1] == 7) & (init_rew_beh.iloc[:, 4] == 1)).dropna()
+# frames = [correct_trial_Cz, correct_trial_Lz]
+# correct_trial = pd.concat(frames)
 
-extract_time = correct_trial.iloc[-1, 0] - correct_trial.iloc[0, 0]
-print("Start time is ", correct_trial.iloc[0, 0], " and end time is ",
-      correct_trial.iloc[-1, 0], "and the difference is ", extract_time)
+# extract_time = correct_trial.iloc[-1, 0] - correct_trial.iloc[0, 0]
+# print("Start time is ", correct_trial.iloc[0, 0], " and end time is ",
+#       correct_trial.iloc[-1, 0], "and the difference is ", extract_time)
 
 
-correct_trial_dlc = dlc_data.where(
-    (dlc_data.iloc[:, 24] > 261.55) & (dlc_data.iloc[:, 24] < 360.87)).dropna()
+# correct_trial_dlc = dlc_data.where(
+#     (dlc_data.iloc[:, 24] > 261.55) & (dlc_data.iloc[:, 24] < 360.87)).dropna()
 
 # %% plot
 
 
 # Find and plot only left turn coordinates for correct trials
 
-col0 = correct_trial_dlc.iloc[:-1, 18]  # x coordinates
-col1 = correct_trial_dlc.iloc[:-1, 19]  # y coordinates
-col2 = correct_trial_dlc.iloc[:-1, 24]  # time
+col0 = new_dlc_data.iloc[:-1, 18]  # x coordinates
+col1 = new_dlc_data.iloc[:-1, 19]  # y coordinates
+col2 = new_dlc_data.iloc[:-1, 24]  # time
 col3 = speed_df.iloc[:-1, 0]  # speed values
 coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
 # rename column names
@@ -864,10 +864,10 @@ sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
 coords_df.isnull().sum()
 
 
-# %%
+# %% Plot
 
 # slice a dataset in bins
-set_bins = 250
+set_bins = 125
 coords_quartiles = np.array(coords_df)
 coords_quartiles = np.array_split(coords_quartiles, set_bins)
 
