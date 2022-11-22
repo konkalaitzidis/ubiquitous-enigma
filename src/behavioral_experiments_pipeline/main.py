@@ -585,15 +585,17 @@ print("Behavioral data file size is: ",
 print("Behavioral data file size is: ",
       beh_data.iloc[:, 2].size, " and type is: ", type(beh_data.iloc[:, 2]))
 print("Behavioral data file size is: ",
+      beh_data.iloc[:, 3].size, " and type is: ", type(beh_data.iloc[:, 3]))
+print("Behavioral data file size is: ",
       beh_data.iloc[:, 4].size, " and type is: ", type(beh_data.iloc[:, 4]))
 print("Behavioral data file size is: ",
       beh_data.iloc[:, 5].size, " and type is: ", type(beh_data.iloc[:, 5]))
-print("Behavioral data file size is: ",
-      beh_data.iloc[:, 6].size, " and type is: ", type(beh_data.iloc[:, 6]))
+# print("Behavioral data file size is: ",
+#       beh_data.iloc[:, 6].size, " and type is: ", type(beh_data.iloc[:, 6]))
 
 # create new dataframe
-init_rew_beh = pd.concat([beh_data.iloc[:, 0], beh_data.iloc[:, 1], beh_data.iloc[:, 2], beh_data.iloc[:, 4],
-                         beh_data.iloc[:, 5], beh_data.iloc[:, 6]], axis=1)
+init_rew_beh = pd.concat([beh_data.iloc[:, 0], beh_data.iloc[:, 1], beh_data.iloc[:, 2], beh_data.iloc[:, 3], beh_data.iloc[:, 4],
+                         beh_data.iloc[:, 5]], axis=1)
 print("Initiation to Reward Behavioral data file size is: ",
       init_rew_beh.size, " and type is: ", type(init_rew_beh))
 
@@ -680,7 +682,7 @@ init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 3
 # %%
 
 # drop Rz
-init_rew_beh.drop('R_Zone', inplace=True, axis=1)
+# init_rew_beh.drop('R_Zone', inplace=True, axis=1)
 
 
 # replace the 2 values in C_zone with 3 if L_Zone is 3
@@ -714,14 +716,14 @@ trial_list = []
 for index, row, in init_rew_beh.iterrows():  # for every row in df
 
     # if value of column Central Zone is 1 (True)
-    if init_rew_beh.iloc[index, 3] == 1 and Cz2 == False:
+    if init_rew_beh.iloc[index, 4] == 1 and Cz2 == False:
 
         if start_time == -1:  # if start_time hasnt been found
             start_time = init_rew_beh.iloc[index, 0]  # start time is the time in index row
 
         # either way add the index row in a new df
         trial_DF = trial_DF.append(
-            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4]}, ignore_index=True)
         correct_sequence = True
 
         # start_and_end_time_of_trial(start_time, end_time, trial_DF) # send start and end time in function
@@ -731,18 +733,18 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
         #         {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
         #     correct_sequence = True
 
-    elif init_rew_beh.iloc[index, 3] == 2 and correct_sequence == True and Cz3 == False:
+    elif init_rew_beh.iloc[index, 4] == 2 and correct_sequence == True and Cz3 == False:
         trial_DF = trial_DF.append(
-            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4]}, ignore_index=True)
         # correct_sequence = True
         Cz2 = True
 
-    elif init_rew_beh.iloc[index, 3] == 3 and correct_sequence == True:
+    elif init_rew_beh.iloc[index, 4] == 3 and correct_sequence == True:
         trial_DF = trial_DF.append(
-            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4]}, ignore_index=True)
         # correct_sequence = True
 
-        if init_rew_beh.iloc[index + 1, 3] == 2:
+        if init_rew_beh.iloc[index + 1, 4] == 2:
             correct_sequence = False
             trial_number += 1
             end_time = init_rew_beh.iloc[index, 0]
