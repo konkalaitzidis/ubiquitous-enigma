@@ -13,17 +13,17 @@ Pipeline to analyze behavioral, tracking, and calcium imagery data.
 # %% Importing Packages and Libraries
 
 import warnings
-from time import sleep
+# from time import sleep
 from scipy.spatial.distance import euclidean
-import scipy.interpolate as interp
+# import scipy.interpolate as interp
 import time
-import math
-from sklearn.preprocessing import normalize
-from scipy import stats
+# import math
+# from sklearn.preprocessing import normalize
+# from scipy import stats
 from sklearn import preprocessing
 import seaborn as sns
 from linear_search import l_search
-from scipy.stats import gaussian_kde
+# from scipy.stats import gaussian_kde
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -575,8 +575,6 @@ plt.show()
 
 # %%
 
-# extract the times from beh_data where phase is init to reward true, find the the corresponding coordinates in the
-
 print("Behavioral data file size is: ", beh_data.size, " and type is: ", type(beh_data))
 print("Behavioral data file size is: ",
       beh_data.iloc[:, 0].size, " and type is: ", type(beh_data.iloc[:, 0]))
@@ -603,73 +601,6 @@ print("Initiation to Reward Behavioral data file size is: ",
 init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
 init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 1
 
-# %%
-
-
-init_counter = 0
-lz_counter = 0
-reward_time_list = []
-trial_list = []
-
-trial = init_rew_beh.iloc[index, 1]
-trial_list += [trial]
-init_reward_time_list = []
-lz_reward_time_list = []
-end_time = 0
-reward_list = []
-
-for index, row in init_rew_beh.iterrows():
-
-    if init_rew_beh.iloc[index, 3] == 1:
-
-        # find_start_end(t0, index, end_time)
-        reward = init_rew_beh.iloc[index, 2]
-        reward_list += [reward]
-
-        init_reward_time = init_rew_beh.iloc[index, 0]
-        init_reward_time_list += [init_reward_time]
-        init_counter += 1
-
-        # reward_time = init_rew_beh.iloc[index, 0]
-        # reward_time_list += [reward_time]
-    elif init_rew_beh.iloc[index, 4] == 1:
-
-        # find_start_end(tN, index, end_time)
-
-        reward = init_rew_beh.iloc[index, 2]
-        reward_list += [reward]
-
-        lz_reward_time = init_rew_beh.iloc[index, 0]
-        lz_reward_time_list += [lz_reward_time]
-
-        lz_counter += 1
-    else:
-        index += 1
-
-x = np.array(reward_list)
-print(np.unique(x))
-
-unique, counts = np.unique(reward_list, return_counts=True)
-
-result = np.column_stack((unique, counts))
-print(result)
-
-
-start_time = init_reward_time_list[0]
-end_time = lz_reward_time_list[-1]
-
-print("Start time is ", start_time, "and end time is ", end_time)
-
-
-# a = pd.Series(np.fill(np.nan, len(df)))
-# a[df.c_zone] = 1.0
-# a[df.left_arm] = 2.0
-# a[df.left_arm.diff()==1] = 0.0
-# a = a.ffill()
-
-
-# %% function
-
 
 # %% merging truth values from other columns to central zone
 
@@ -678,12 +609,6 @@ init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
 init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == False] = 2
 init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == False] = 2
 init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 3
-
-# %%
-
-# drop Rz
-# init_rew_beh.drop('R_Zone', inplace=True, axis=1)
-
 
 # replace the 2 values in C_zone with 3 if L_Zone is 3
 init_rew_beh["Central_Zone"][init_rew_beh["L_Zone"] == 3] = 3
@@ -779,12 +704,8 @@ for index, row in correct_trial_DF.iterrows():
     for index, row in dlc_data.iterrows():
         if dlc_data.iloc[index, 25] >= correct_trial_DF.iloc[trial_count, 1] and dlc_data.iloc[index, 25] <= correct_trial_DF.iloc[trial_count, 2]:
             new_dlc_data = new_dlc_data.append(dlc_data.iloc[index, :])
-        #trial_count += 1
     trial_count += 1
-
-
-# correct_trial_dlc = dlc_data.where(
-#     ((dlc_data.iloc[:, 24] > 41.275456) & (dlc_data.iloc[:, 24] < 92.847808)) & ((dlc_data.iloc[:, 24] > 210.618432) & (dlc_data.iloc[:, 24] < 325.368512)) & ((dlc_data.iloc[:, 24] > 369.276992) & (dlc_data.iloc[:, 24] < 487.094144)) & ((dlc_data.iloc[:, 24] > 568.859405) & (dlc_data.iloc[:, 24] < 787.692006)) & ((dlc_data.iloc[:, 24] > 890.07648) & (dlc_data.iloc[:, 24] < 1081.788915))).dropna()
+    print(new_dlc_data)
 
 
 # %% Extract one correct trial
@@ -804,7 +725,7 @@ for index, row in correct_trial_DF.iterrows():
 # correct_trial_dlc = dlc_data.where(
 #     (dlc_data.iloc[:, 24] > 261.55) & (dlc_data.iloc[:, 24] < 360.87)).dropna()
 
-# %% plot
+# %% Plot only left turn coordinates
 
 
 # Find and plot only left turn coordinates for correct trials
@@ -864,10 +785,10 @@ sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
 coords_df.isnull().sum()
 
 
-# %% Plot
+# %% Plot distance and speed
 
 # slice a dataset in bins
-set_bins = 125
+set_bins = 50
 coords_quartiles = np.array(coords_df)
 coords_quartiles = np.array_split(coords_quartiles, set_bins)
 
@@ -912,8 +833,6 @@ plt.ylabel("Speed")
 plt.show()
 
 # con = np.concatenate((x_scaled, y_scaled), axis=1)
-
-# %%
 
 
 # %%
