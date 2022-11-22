@@ -694,15 +694,15 @@ init_rew_beh["Central_Zone"][init_rew_beh["L_Zone"] == 3] = 3
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def start_and_end_time_of_trial(start_time, end_time, trial_number):
-    correct_trial_DF = pd.DataFrame([], columns=['Trial Number', 'Start time', 'End time'])
-    correct_trial_DF = correct_trial_DF.append(
-        {'Trial Number': trial_number, 'Start time': start_time, 'End time': end_time}, ignore_index=True)
-    return correct_trial_DF
+# def start_and_end_time_of_trial(correct_trial_DF, start_time, end_time, trial_number, start_frame, end_frame):
+#     correct_trial_DF = correct_trial_DF.append(
+#         {'Trial Number': trial_number, 'Start time': start_time, 'End time': end_time, 'Start Frame': start_frame, 'End Frame': end_frame}, ignore_index=True)
+#     return correct_trial_DF
 
 
 # take the time values from cz 1 -> 3
 trial_DF = pd.DataFrame([], columns=['Timestamps', 'Value'])
+correct_trial_DF = pd.DataFrame()
 end_time = 0
 start_time = -1
 correct_sequence = False
@@ -711,6 +711,8 @@ Cz2 = False
 Cz3 = False
 dataframe_collection = {}
 trial_list = []
+start_frame = 0
+end_frame = 0
 
 
 for index, row, in init_rew_beh.iterrows():  # for every row in df
@@ -720,51 +722,55 @@ for index, row, in init_rew_beh.iterrows():  # for every row in df
 
         if start_time == -1:  # if start_time hasnt been found
             start_time = init_rew_beh.iloc[index, 0]  # start time is the time in index row
+        start_frame = init_rew_beh.iloc[index, 3]
 
         # either way add the index row in a new df
         trial_DF = trial_DF.append(
-            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4]}, ignore_index=True)
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4], 'Frame Number': init_rew_beh.iloc[index, 3]}, ignore_index=True)
         correct_sequence = True
-
-        # start_and_end_time_of_trial(start_time, end_time, trial_DF) # send start and end time in function
-
-        # if init_rew_beh.iloc[index + 1, 3] == 2:
-        #     trial_DF = trial_DF.append(
-        #         {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 3]}, ignore_index=True)
-        #     correct_sequence = True
 
     elif init_rew_beh.iloc[index, 4] == 2 and correct_sequence == True and Cz3 == False:
         trial_DF = trial_DF.append(
-            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4]}, ignore_index=True)
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4], 'Frame Number': init_rew_beh.iloc[index, 3]}, ignore_index=True)
         # correct_sequence = True
         Cz2 = True
 
     elif init_rew_beh.iloc[index, 4] == 3 and correct_sequence == True:
         trial_DF = trial_DF.append(
-            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4]}, ignore_index=True)
+            {'Timestamps': init_rew_beh.iloc[index, 0], 'Value': init_rew_beh.iloc[index, 4], 'Frame Number': init_rew_beh.iloc[index, 3]}, ignore_index=True)
         # correct_sequence = True
 
         if init_rew_beh.iloc[index + 1, 4] == 2:
             correct_sequence = False
+            end_frame = init_rew_beh.iloc[index, 3]
             trial_number += 1
             end_time = init_rew_beh.iloc[index, 0]
-            correct_trials = start_and_end_time_of_trial(start_time, end_time, trial_number)
+
+            correct_trial_DF = correct_trial_DF.append(
+                {'Trial Number': trial_number, 'Start time': start_time, 'End time': end_time, 'Start Frame': start_frame, 'End Frame': end_frame}, ignore_index=True)
+
+            # correct_trials = start_and_end_time_of_trial(correct_trial_DF,
+            #     start_time, end_time, trial_number, start_frame, end_frame)
             # print("Correct_trials\n", correct_trials)
-            sleep(2)
-            trial_list += [correct_trials]
+            # sleep(2)
+            # trial_list += [correct_trial_DF]
+
             # reset variables
             Cz2 = False
             start_time = -1
             Cz3 = True
 
-print(trial_list)
+print(correct_trial_DF)
 
 
 # DF= pd.DataFrame({'chr': ["chr3", "chr3", "chr7", "chr6", "chr1"], 'pos': [10, 20, 30, 40, 50], })
 # ans= [y for x, y in DF.groupby('chr')]
 
-# %% extract time range from dlc
+# %% extract frame numbers from dlc
 
+distinct_frames =
+
+coorect_trial_dlc = dlc_data.where(dlc_data)
 
 # correct_trial_dlc = dlc_data.where(
 #     ((dlc_data.iloc[:, 24] > 41.275456) & (dlc_data.iloc[:, 24] < 92.847808)) & ((dlc_data.iloc[:, 24] > 210.618432) & (dlc_data.iloc[:, 24] < 325.368512)) & ((dlc_data.iloc[:, 24] > 369.276992) & (dlc_data.iloc[:, 24] < 487.094144)) & ((dlc_data.iloc[:, 24] > 568.859405) & (dlc_data.iloc[:, 24] < 787.692006)) & ((dlc_data.iloc[:, 24] > 890.07648) & (dlc_data.iloc[:, 24] < 1081.788915))).dropna()
