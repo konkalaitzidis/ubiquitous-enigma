@@ -10,7 +10,7 @@ A module-level docstring
 Pipeline to analyze behavioral, tracking, and calcium imagery data.
 
 """
-# %% Importing Packages and Libraries
+# %% Importing Packages and Libraries -> Run 1
 
 import warnings
 # from time import sleep
@@ -32,7 +32,7 @@ from dataset_info import info
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
-# %% Data Preparation
+# %% Data Preparation -> Run 2
 
 print("\n\n\n=====> Data Preparation... <===== \n\n\n")
 
@@ -105,7 +105,7 @@ info(datafile_names)
 # TODO if requested in the future
 
 
-# %% Processing
+# %% Processing -> Run 3
 
 print("\n\n\n=====> Processing... <===== \n\n\n")
 
@@ -223,7 +223,7 @@ print("Also found MAX SPEED and MINIMUM SPEED")
 # plt.tight_layout()
 #
 # =============================================================================
-# %% Finding the speed of the mouse for Initiation-Reward trials
+# %% Finding the speed of the mouse for Initiation-Reward trials -> Run 4
 
 speed_list = pd.Series(speed_list)  # speed values of mice for whole session
 speed_time = dlc_data.iloc[:, -1]  # time values for whole session
@@ -573,7 +573,7 @@ plt.ylabel("Speed")
 plt.show()
 
 
-# %%
+# %% -> Run 5
 
 print("Behavioral data file size is: ", beh_data.size, " and type is: ", type(beh_data))
 print("Behavioral data file size is: ",
@@ -602,7 +602,7 @@ init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
 init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 1
 
 
-# %% merging truth values from other columns to central zone
+# %% merging truth values from other columns to central zone -> Run 6
 
 
 init_rew_beh["Central_Zone"][init_rew_beh["Central_Zone"] == True] = 1
@@ -613,8 +613,152 @@ init_rew_beh["L_Zone"][init_rew_beh["L_Zone"] == True] = 3
 # replace the 2 values in C_zone with 3 if L_Zone is 3
 init_rew_beh["Central_Zone"][init_rew_beh["L_Zone"] == 3] = 3
 
+# %% Plot only left turn coordinates -> Run 9
 
-# %% extract all correct left-turn trials
+new_dlc_data = pd.DataFrame()
+
+dlc_data['index_col'] = dlc_data.index
+
+
+# # Find and plot only left turn coordinates for correct trials
+
+# col0 = new_dlc_data.iloc[:-1, 18]  # x coordinates
+# col1 = new_dlc_data.iloc[:-1, 19]  # y coordinates
+# col2 = new_dlc_data.iloc[:-1, 24]  # time
+# # col3 = speed_df.iloc[:-1, 0]  # speed values
+# coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
+
+
+# Find and plot only left turn coordinates for correct trials
+
+col0 = dlc_data.iloc[:-1, 18]  # x coordinates
+col1 = dlc_data.iloc[:-1, 19]  # y coordinates
+col2 = dlc_data.iloc[:-1, 24]  # time
+# col3 = speed_df.iloc[:-1, 0]  # speed values
+coords_df = pd.concat([col0, col1, col2], axis=1)  # x, y coordinates dataframe and time
+# rename column names
+# coords_df = coords_df.rename(columns={
+#     0: 'x', 1: 'y'})
+
+print("X coordinates: ", col0.size, "& ", col0.isnull().sum(), " missing values")
+print("Y coordinates: ", col1.size, "& ", col1.isnull().sum(), " missing values")
+print("Time: ", col2.size, "& ", col2.isnull().sum(), " missing values")
+# print("Speed values: ", col3.size, "& ", col3.isnull().sum(), " missing values")
+print("Coords_df: ", coords_df.size, "& ", coords_df.isnull().sum(), " missing values")
+
+
+# left turning coordinates x & y
+lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
+lcy = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200))
+
+# replace missing values with the 0
+print("X coordinates: ", lcx.size, "& ", lcx.isnull().sum(), " missing values")
+print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum(), " missing values")
+
+lcy = lcy.fillna(0)
+print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum(), " missing values")
+# drop all zeros
+
+coords_df = pd.concat([lcx, lcy, col2], axis=1)  # col3
+coords_df.isnull().sum()
+
+coords_df = coords_df[coords_df.iloc[:, 1] != 0]
+
+
+plt.scatter(coords_df.iloc[:, 0], coords_df.iloc[:, 1], s=0.01)
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
+
+# Finding the speed of the mouse for Initiation-Reward trials -> Run 4
+
+speed_list = pd.Series(speed_list)  # speed values of mice for whole session
+speed_time = coords_df.iloc[:, -1]  # time values for whole session
+
+
+# Speed dataframe
+speed_df = pd.DataFrame({'SPEED': speed_list, 'TIME': speed_time})
+
+
+# %% Plot distance and speed -> Run 10
+
+# slice a dataset in bins
+set_bins = 50
+coords_quartiles = np.array(coords_df)
+coords_quartiles = np.array_split(coords_quartiles, set_bins)
+
+average_speed_list = []
+for index in range(set_bins):
+    average_speed = np.mean(coords_quartiles[index][:, 2])
+    average_speed_list += [average_speed]
+    # print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
+    index += 1
+print("Average speed for each bin: \n", average_speed_list, "\n\n")
+
+
+# eucledean distance
+bin_distance_list = []
+total_distance = 0
+total_distance_list = []
+for index in range(set_bins):
+    bin_distance = euclidean(coords_quartiles[index][:, 0], coords_quartiles[index][:, 1])
+    bin_distance_list += [bin_distance]
+    total_distance = total_distance + bin_distance_list[index]
+    total_distance_list += [total_distance]
+print("Calculated distance each bin: \n", bin_distance_list)
+print("Total distance: ", total_distance)
+
+
+# normalize
+total_distance_list = np.array(total_distance_list)
+average_speed_list = np.array(average_speed_list)
+
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(total_distance_list.reshape(-1, 1))
+
+min_max_scaler = preprocessing.MinMaxScaler()
+y_scaled = min_max_scaler.fit_transform(average_speed_list.reshape(-1, 1))
+
+
+# plot
+print("Plot: \n")
+plt.plot(x_scaled, y_scaled)
+plt.xlabel("distance")
+plt.ylabel("Speed")
+plt.show()
+
+# con = np.concatenate((x_scaled, y_scaled), axis=1)
+
+# %%
+
+
+col3 = speed_df.iloc[:-1, 0]  # speed values
+coords_df['Speed Values'] =  # x, y coordinates dataframe and time
+dlc_data['index_col'] = dlc_data.index
+
+
+print("Line graph: ")
+plt.plot(speed_df.iloc[:, 1], speed_df.iloc[:, 0])
+plt.xlabel("Session t")
+plt.ylabel("Speed")
+plt.show()
+
+left_turn_time = coords_df.iloc[:, 2]
+left_turn_speeds = coords_df.iloc[:, 3]
+print("Line graph: ")
+plt.plot(left_turn_time, left_turn_speeds)
+plt.xlabel("Session t")
+plt.ylabel("Speed")
+plt.show()
+
+
+# missing data
+ax = plt.axes()
+sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
+coords_df.isnull().sum()
+
+
+# %% extract all correct left-turn trials -> Run 7
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -691,13 +835,11 @@ print(correct_trial_DF)
 # DF= pd.DataFrame({'chr': ["chr3", "chr3", "chr7", "chr6", "chr1"], 'pos': [10, 20, 30, 40, 50], })
 # ans= [y for x, y in DF.groupby('chr')]
 
-# %% extract frame numbers from dlc
+# %% extract frame numbers from dlc -> Run 8
 
 
 trial_count = 0
-new_dlc_data = pd.DataFrame()
 
-dlc_data['index_col'] = dlc_data.index
 
 for index, row in correct_trial_DF.iterrows():
 
@@ -724,115 +866,6 @@ for index, row in correct_trial_DF.iterrows():
 
 # correct_trial_dlc = dlc_data.where(
 #     (dlc_data.iloc[:, 24] > 261.55) & (dlc_data.iloc[:, 24] < 360.87)).dropna()
-
-# %% Plot only left turn coordinates
-
-
-# Find and plot only left turn coordinates for correct trials
-
-col0 = new_dlc_data.iloc[:-1, 18]  # x coordinates
-col1 = new_dlc_data.iloc[:-1, 19]  # y coordinates
-col2 = new_dlc_data.iloc[:-1, 24]  # time
-col3 = speed_df.iloc[:-1, 0]  # speed values
-coords_df = pd.concat([col0, col1, col2, col3], axis=1)  # x, y coordinates dataframe and time
-# rename column names
-# coords_df = coords_df.rename(columns={
-#     0: 'x', 1: 'y'})
-
-print("X coordinates: ", col0.size, "& ", col0.isnull().sum(), " missing values")
-print("Y coordinates: ", col1.size, "& ", col1.isnull().sum(), " missing values")
-print("Time: ", col2.size, "& ", col2.isnull().sum(), " missing values")
-print("Speed values: ", col3.size, "& ", col3.isnull().sum(), " missing values")
-print("Coords_df: ", coords_df.size, "& ", coords_df.isnull().sum(), " missing values")
-
-
-# left turning coordinates x & y
-lcx = coords_df.iloc[:, 0].where(coords_df.iloc[:, 0] < 700)
-lcy = coords_df.iloc[:, 1].where((coords_df.iloc[:, 1] < 700) & (coords_df.iloc[:, 1] > 200))
-
-# replace missing values with the 0
-print("X coordinates: ", lcx.size, "& ", lcx.isnull().sum(), " missing values")
-print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum(), " missing values")
-
-lcy = lcy.fillna(0)
-print("Y coordinates: ", lcy.size, "& ", lcy.isnull().sum(), " missing values")
-# drop all zeros
-
-coords_df = pd.concat([lcx, lcy, col2, col3], axis=1)
-coords_df.isnull().sum()
-
-coords_df = coords_df[coords_df.iloc[:, 1] != 0]
-
-
-plt.scatter(coords_df.iloc[:, 0], coords_df.iloc[:, 1], s=0.01)
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.show()
-
-
-left_turn_time = coords_df.iloc[:, 2]
-left_turn_speeds = coords_df.iloc[:, 3]
-print("Line graph: ")
-plt.plot(left_turn_time, left_turn_speeds)
-plt.xlabel("Session t")
-plt.ylabel("Speed")
-plt.show()
-
-
-# missing data
-ax = plt.axes()
-sns.heatmap(coords_df.isna().transpose(), cbar=False, ax=ax)
-coords_df.isnull().sum()
-
-
-# %% Plot distance and speed
-
-# slice a dataset in bins
-set_bins = 50
-coords_quartiles = np.array(coords_df)
-coords_quartiles = np.array_split(coords_quartiles, set_bins)
-
-average_speed_list = []
-for index in range(set_bins):
-    average_speed = np.mean(coords_quartiles[index][:, 3])
-    average_speed_list += [average_speed]
-    # print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
-    index += 1
-print("Average speed for each bin: \n", average_speed_list, "\n\n")
-
-
-# eucledean distance
-bin_distance_list = []
-total_distance = 0
-total_distance_list = []
-for index in range(set_bins):
-    bin_distance = euclidean(coords_quartiles[index][:, 0], coords_quartiles[index][:, 1])
-    bin_distance_list += [bin_distance]
-    total_distance = total_distance + bin_distance_list[index]
-    total_distance_list += [total_distance]
-print("Calculated distance each bin: \n", bin_distance_list)
-print("Total distance: ", total_distance)
-
-
-# normalize
-total_distance_list = np.array(total_distance_list)
-average_speed_list = np.array(average_speed_list)
-
-min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(total_distance_list.reshape(-1, 1))
-
-min_max_scaler = preprocessing.MinMaxScaler()
-y_scaled = min_max_scaler.fit_transform(average_speed_list.reshape(-1, 1))
-
-
-# plot
-print("Plot: \n")
-plt.plot(x_scaled, y_scaled)
-plt.xlabel("distance")
-plt.ylabel("Speed")
-plt.show()
-
-# con = np.concatenate((x_scaled, y_scaled), axis=1)
 
 
 # %%
