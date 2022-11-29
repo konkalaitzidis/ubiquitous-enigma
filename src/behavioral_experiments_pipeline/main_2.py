@@ -192,10 +192,10 @@ speed_list = []
 
 
 # Find all the speeds of the mouse
-for index, row in coords_df.iterrows():
+for index, row in dlc_data.iterrows():
 
     # control if to exit the function
-    if coords_df.iat[index, -1] == coords_df.iat[-1, -1]:
+    if dlc_data.iat[index, -1] == dlc_data.iat[-1, -1]:
         print("All speed values have been stored in list successfully.")
         break
 
@@ -237,7 +237,7 @@ print("Also found MAX SPEED and MINIMUM SPEED")
 # %% Finding the speed of the mouse for Initiation-Reward trials -> Run 4
 
 speed_list = pd.Series(speed_list)  # speed values of mice for whole session
-speed_time = coords_df.iloc[:, 2]  # time values for whole session
+speed_time = dlc_data.iloc[:, 24]  # time values for whole session
 
 
 # Speed dataframe
@@ -256,12 +256,6 @@ plt.show()
 col3 = speed_df.iloc[:-1, 0]  # speed values
 coords_df['Speed Values'] = col3  # x, y coordinates dataframe and time
 coords_df = coords_df.dropna()
-
-print("Line graph: ")
-plt.plot(speed_df.iloc[:, 1], speed_df.iloc[:, 0])
-plt.xlabel("Session t")
-plt.ylabel("Speed")
-plt.show()
 
 left_turn_time = coords_df.iloc[:, 2]
 left_turn_speeds = coords_df.iloc[:, 4]
