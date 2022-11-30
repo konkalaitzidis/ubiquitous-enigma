@@ -368,13 +368,13 @@ for index, row in correct_trial_DF.iterrows():
 # %% Plot distance and speed -> Run 10
 
 # slice a dataset in bins
-set_bins = 100
+set_bins = len(correct_trial_DF)
 coords_quartiles = np.array(new_dlc_data)
 coords_quartiles = np.array_split(coords_quartiles, set_bins)
 
 average_speed_list = []
 for index in range(set_bins):
-    average_speed = np.mean(coords_quartiles[index][:, 2])
+    average_speed = np.median(coords_quartiles[index][:, 2])
     average_speed_list += [average_speed]
     # print("The mouse's average speed is for bin", index, " is: ", average_speed_list[index])
     index += 1
@@ -409,5 +409,42 @@ y_scaled = min_max_scaler.fit_transform(average_speed_list.reshape(-1, 1))
 print("Plot: \n")
 plt.plot(x_scaled, y_scaled)
 plt.xlabel("distance")
+plt.ylabel("Speed")
+plt.show()
+
+
+# %%
+print("Line graph: ")
+
+for index in range(set_bins):
+    plt.plot(coords_quartiles[index][:, 2], coords_quartiles[index][:, 4])
+    plt.xlabel("Session t")
+    plt.ylabel("Speed")
+    plt.show()
+
+j = 0
+for i, row in correct_trial_DF.iterrows():
+    for j in range(correct_trial_DF.iloc[j, 1], correct_trial_DF.iloc[j, 1]):
+
+        # find me the euclidean distance for this trial
+        bin_distance = euclidean(coords_quartiles[index][:, 0], coords_quartiles[index][:, 1])
+        bin_distance_list += [bin_distance]
+        total_distance = total_distance + bin_distance_list[index]
+        total_distance_list += [total_distance]
+        print("Calculated distance each bin: \n", bin_distance_list)
+        print("Total distance: ", total_distance)
+
+        # findme the average speeds
+
+        # store
+        plt.plot(coords_quartiles[index][:, 2], coords_quartiles[index][:, 4])
+        plt.xlabel("Session t")
+        plt.ylabel("Speed")
+        plt.show()
+
+        j += 1  # increase j
+
+plt.plot(x_scaled, new_dlc_data.iloc[2477:5569, 4])
+plt.xlabel("Session t")
 plt.ylabel("Speed")
 plt.show()
