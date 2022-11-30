@@ -131,8 +131,6 @@ init_rew_beh["Central_Zone"][init_rew_beh["L_Zone"] == 3] = 3
 
 # %% Adding index column to dlc file -> Run 4
 
-new_dlc_data = pd.DataFrame()
-
 dlc_data['index_col'] = dlc_data.index
 
 # %% Find and plot only left turn coordinates for correct trials
@@ -340,16 +338,30 @@ correct_trial_DF = correct_trial_DF.iloc[:, 0:3].astype(int)
 print(correct_trial_DF)
 
 
+# drop the last row
+correct_trial_DF = correct_trial_DF[:-1]
+# coords_df.drop(coords_df.index[correct_trial_DF.iloc[-1, 1]:len(coords_df)])
+
+
+# for index, row in correct_trial_DF.iterrows():
+#     correct_trial_DF.iloc[index, 1].drop([where(correct_trial_DF.iloc[index, 1] > coords_df.iloc[index, 3])], axis=0)
+
+
+# correct_trial_DF.drop([correct_trial_DF.where(correct_trial_DF.iloc[:, 1] >= coords_df.iloc[:, -2])])
+# df.drop(df[df.scrrect_trial_DF = ore < 50].index, inplace=True)
+
+
 # %%
 trial_count = 0
-
+new_dlc_data = pd.DataFrame()
 
 for index, row in correct_trial_DF.iterrows():
 
-    for index, row in coords_df.iterrows():
+    for index in range(correct_trial_DF.iloc[-1, 1]):
         if coords_df.iloc[index, 3] >= correct_trial_DF.iloc[trial_count, 1] and coords_df.iloc[index, 3] <= correct_trial_DF.iloc[trial_count, 2]:
             new_dlc_data = new_dlc_data.append(coords_df.iloc[index, :])
     trial_count += 1
+
     print(new_dlc_data)
 
 
@@ -357,7 +369,7 @@ for index, row in correct_trial_DF.iterrows():
 
 # slice a dataset in bins
 set_bins = 100
-coords_quartiles = np.array(coords_df)
+coords_quartiles = np.array(new_dlc_data)
 coords_quartiles = np.array_split(coords_quartiles, set_bins)
 
 average_speed_list = []
