@@ -406,6 +406,7 @@ y_scaled = min_max_scaler.fit_transform(average_speed_list.reshape(-1, 1))
 
 
 # plot
+plt.figure(figsize=(7, 3))
 print("Plot: \n")
 plt.plot(x_scaled, y_scaled)
 plt.xlabel("distance")
@@ -444,6 +445,7 @@ for i, row in correct_trial_DF.iterrows():
 
         j += 1  # increase j
 
+plt.figure(figsize=(7, 3))
 plt.plot(x_scaled, new_dlc_data.iloc[2477:5569, 4])
 plt.xlabel("Session t")
 plt.ylabel("Speed")
